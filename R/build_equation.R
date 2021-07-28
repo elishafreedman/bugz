@@ -151,6 +151,7 @@ build_equations <- function(endo_s = endo_species, endo_no = endo_number){
           matG[i+1, j+1] <- paste0(matG[i+1, j+1], " + ", j+1, "*nuB*N", i, j+1)
       }
     }
+  }
     equations <- paste0("    ", leftSides, " = ", matD, matT, " + ", matL, " + ", matG, "\n")
     equations <- paste0(equations, collapse = "\n")
     functionFront <- "ODEsystem <- function(times, states, parameters){\n  with(as.list(c(states, parameters)),{\n"
@@ -159,7 +160,6 @@ build_equations <- function(endo_s = endo_species, endo_no = endo_number){
     cat(completeFunction)
 
     ODEsystem <- eval(parse(text = completeFunction))
-  }
 
   #create vector of initial states for the run_model function to use
     ODE <- list(endo_s = endo_s,

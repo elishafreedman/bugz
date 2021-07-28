@@ -1,6 +1,6 @@
 Package: bugz
 Type: Package
-Title:  bugz
+Title: bugz
 Version: 0.1.0
 Author: Elisha Ho Freedman
 Maintainer: The package maintainer <e.freedman@uq.edu.au>
@@ -8,12 +8,12 @@ Description: Simulating the spread of endosymbiont infections throughout hosts u
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Imports: dplyr,
+Imports:dplyr,
          tidyr,
          ggplot2, 
          deSolve, 
-         shiny, 
-         stats, 
-         pbapply
-         
-    
+          shiny, 
+          stats, 
+          pbapply, 
+          parallel
+RoxygenNote: 7.1.1

@@ -40,8 +40,6 @@ run_model <- function(endo_species = 2,
                       endo_species = endo_species,
                       endo_no_per_sp = endo_number,
                       max_timesteps = tmax)
-  print(paste("#","parameter", "combinations:", nrow(parameters), ", maximum timestep:", tmax))
-  pb <- txtProgressBar(min = 0, max = nrow(parameters), style = 3)
 
   times <- seq(0, tmax, 1)
   results <- list()
