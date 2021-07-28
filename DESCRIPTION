@@ -1,12 +1,10 @@
 Package: bugz
 Type: Package
-Title:  
+Title:  bugz
 Version: 0.1.0
 Author: Elisha Ho Freedman
 Maintainer: The package maintainer <e.freedman@uq.edu.au>
-Description: Simulating the spread of endosymbiont infections throughout hosts 
-using modified susceptible infected susceptible Ordinary Differential Equations, 
-performing statistics on simulations, and plotting results. 
+Description: Simulating the spread of endosymbiont infections throughout hosts using modified susceptible infected susceptible Ordinary Differential Equations, performing statistics on simulations, and plotting results. 
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
