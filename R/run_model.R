@@ -186,7 +186,7 @@ names(ini_state) <- c(ins)
                                               tmax = input$tmax)
 
         })
-        onStop(function() saveR())
+        onStop(function() P<-saveR())
       }
       ui<-fluidPage(
         titlePanel("Endosymbiont coinfections"),
@@ -211,7 +211,7 @@ names(ini_state) <- c(ins)
                                               tmax = input$tmax)
 
         })
-        onStop(function() saveR())
+        onStop(function() P <- saveR())
       }
       ui<-fluidPage(
         titlePanel("Endosymbiont coinfections"),
