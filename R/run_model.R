@@ -5,7 +5,8 @@
 #' @param parameters : a data frame containing all parameter combinations to run the model on
 #' @param tmax : The maximum number of time steps
 #' @param int_plot : if TRUE launches a shiny app for quick glances of results
-#' @param save_results : if TRUE saves the results as a list with the selected file name.
+#' @param save_results : If TRUE saves the results as a list with the selected file name.
+#' @param core_spec : If the number of parameter combinations is large it may be wise to assign multiple cores for speed. if NA, number of cores used in process will be set at half the number of cores available for use on the computer.
 #'
 #' @return Shiny app of all results and /or  a list containing the details of the model,
 #' a data frame of all parameter combinations,
@@ -17,7 +18,7 @@ run_model <- function(endo_species = 2,
                       endo_number = 2,
                       parameters = params,
                       tmax = 1000,
-                      int_plot = TRUE, save_results = c(TRUE,  outfile = "ODE_results.rda")){
+                      int_plot = TRUE, save_results = c(TRUE,  outfile = "ODE_results.rda"), core_spec = NA){
 
 
   #Build the equations
@@ -71,8 +72,12 @@ names(ini_state) <- c(ins)
      ode_calc <- function(x){
        list(Parameters = data.frame(x), Results = data.frame(ode(inistate, time, equation,x)))
      }
-
-     ncore <- detectCores()-1
+if(is.na(core_spec) == TRUE){
+     ncore <- detectCores()/2
+} else{
+     ncore <- core_spec
+}
+     print(paste("simulation using", ncore, "cores"))
      clust <- makeCluster(ncore, "PSOCK")
     clusterExport(cl = clust, varlist = c("ode_calc", "ode", "save_r", "inistate",
                   "time", "equation", "param"),

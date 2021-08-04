@@ -10,7 +10,8 @@ run_model(
   parameters = params,
   tmax = 1000,
   int_plot = TRUE,
-  save_results = c(TRUE, outfile = "ODE_results.rda")
+  save_results = c(TRUE, outfile = "ODE_results.rda"),
+  core_spec = NA
 )
 }
 \arguments{
@@ -24,7 +25,9 @@ run_model(
 
 \item{int_plot}{: if TRUE launches a shiny app for quick glances of results}
 
-\item{save_results}{: if TRUE saves the results as a list with the selected file name.}
+\item{save_results}{: If TRUE saves the results as a list with the selected file name.}
+
+\item{core_spec}{: If the number of parameter combinations is large it may be wise to assign multiple cores for speed. if NA, number of cores used in process will be set at half the number of cores available for use on the computer.}
 }
 \value{
 Shiny app of all results and /or  a list containing the details of the model,
