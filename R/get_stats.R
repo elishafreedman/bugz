@@ -49,7 +49,6 @@ get_stats <- function(results_file = ODE_results,
   }else{
     to_testB<- all_results
   }
-
   if(length(to_testB) == 0){
     warning("Baseline values for parameters you would like to test were not simulated!")
   }
