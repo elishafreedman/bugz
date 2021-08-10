@@ -49,7 +49,7 @@ run_model <- function(endo_species = 2,
 
 ini_state <- c(rep(0, length(ins)))
 names(ini_state) <- c(ins)
-    ini_state <-  case_when(names(ini_state) == "N0"  ~  parameters$K[1]*parameters$mu[1],
+    ini_state <-case_when(names(ini_state) == "N0"  ~  parameters$K[1]*parameters$mu[1],
               names(ini_state) == "N00" ~  parameters$K[1]*parameters$mu[1],
               names(ini_state) == "N1"   ~  1,
               names(ini_state) == "N01"  ~  1,
@@ -70,7 +70,7 @@ names(ini_state) <- c(ins)
 
    if(any(save_r == TRUE)){
      ode_calc <- function(x){
-       list(Parameters = data.frame(x), Results = data.frame(ode(inistate, time, equation,x)))
+       list(Parameters = data.frame(t(x)), Results = data.frame(ode(inistate, time, equation,x)))
      }
 if(is.na(core_spec) == TRUE){
      ncore <- detectCores()/2
