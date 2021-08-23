@@ -159,7 +159,6 @@ if(is.na(core_spec) == TRUE){
       col <- c(colnames(initial_plot[,-1]))
       initial_plot <- pivot_longer(initial_plot, all_of(col), names_to = "infection_status")
       initial_plot$infection_status <- factor(initial_plot$infection_status, levels = col)
-
       ggplot(initial_plot)+
         geom_line(aes(x=time, y = value,
                       colour = infection_status,

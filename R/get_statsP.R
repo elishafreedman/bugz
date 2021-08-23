@@ -13,10 +13,10 @@
 #' @export
 #'
 #' @examples
-get_stats <- function(results_file = ODE_results,
+get_statsP <- function(results_file = ODE_results,
                       test_parameters = c("sigmaBA = sigmaAB"),
                       set_baseline = c(K = 200, lambda = 1, mu = 0.5),
-                      cor_param_method = c("ld", "pearson"),
+                      cor_param_method = c("ld", "pearson"), core_spec = NA,
                       outfile = "Stats.rda"){
 
 
@@ -52,28 +52,26 @@ get_stats <- function(results_file = ODE_results,
   if(length(to_testB) == 0){
     warning("Baseline values for parameters you would like to test were not simulated!")
   }
-print(test_parameters)
+
   #isolating parameter combinations of interest from the dataset
   if(length(test_parameters >= 1) && is.na(test_parameters) == FALSE){
-    #if(model_det$endo_species >= 2){
+    if(model_det$endo_species >= 2){
       #subset the matched parameters from the test_parameters arguments
       #create vector to  match
-     case_when(test_parameters == "sigmaAB = sigmaBA" ~ "sigmaAB",
+      test_parameters <- case_when(test_parameters == "sigmaAB = sigmaBA" ~ "sigmaAB",
                                    test_parameters == "sigmaBA = sigmaAB" ~ "sigmaAB",
                                    test_parameters == "sigmaA = sigmaB" ~ "sigmaA",
                                    test_parameters == "sigmaB = sigmaA" ~ "sigmaA",
-                                   test_parameters == "betaB = betaA" ~ "betaA",
-                                   test_parameters == "betaA = betaB" ~ "betaA",
                                    test_parameters == "nuA = nuB" ~ "nuA",
                                    test_parameters == "nuB = nuA" ~ "nuA")
 
-  #}
-    to_test <- lapply(to_testB, function(x) x[unique(x$Parameters[,test_parameters]) %in% x$Parameters])
+      to_test <- lapply(to_testB, function(x) x[unique(x$Parameters[,test_parameters]) %in% x$Parameters])
       #to_test <- lapply(to_testB, function(x) x[test_parameters %in% unique(x$Parameters[ test_parameters])])
       to_test <- to_test[lapply(to_test, length)>0]
     }else{
       to_test <- to_testB
     }
+  }
   if(length(to_test) == 0){
     warning("Parameter combinations you would like to test were not simulated!")
   }
@@ -112,10 +110,16 @@ print(test_parameters)
 
 
 
+eqR <- function(x = all_results){
+
   print(paste("Finding timepoint where stable equilibrium is reached"))
-  for(i in 1:length(to_test)){
-    s <- to_test[[i]][["Results"]]
-    p <- to_test[[i]][["Parameters"]]
+  coef <- function(X){
+    (sd(X)/mean(X))*100
+  }
+
+  for(i in 1:length(x)){
+    s <- x[[i]][["Results"]]
+    p <- x[[i]][["Parameters"]]
     for(k in 1:(nrow(s)-1)){
       eq <- as.matrix(s[k:(k+1), ])
       VarC <- apply(eq[,-1], 2, FUN = coef)
@@ -124,13 +128,25 @@ print(test_parameters)
         eq_raw[i,] <- c(p, s[eq[1,1],])
         break
       }
+      print(paste("combo", i, "done"))
     }
-    print(paste("search for equilbrium at combination", i, "done"))
     if(all(is.na(eq_raw))){
       warning("system did not reach a stable equilbrium at maximum timestep
           (", model_det$max_timesteps, ")! \n statistics at equilibrium will not be calculated")
     }
   }
+}
+if(is.na(core_spec) == TRUE){
+  ncore <- detectCores()/2
+} else{
+  ncore <- core_spec
+}
+print(paste("simulation using", ncore, "cores"))
+clust <- makeCluster(ncore, "PSOCK")
+clusterExport(cl = clust, varlist = c("eqR", "all_results", "eq_raw"),
+              envir = environment())
+ pbapply(all_results, FUN = eqR, cl = clust)
+stopCluster(clust)
 
 
   # function to calculate the proportion at equilibrium
