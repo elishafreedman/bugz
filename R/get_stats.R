@@ -7,16 +7,20 @@
 #' @param cor_param_method : methods of correlation calculations, options include ld, or
 #' any method from the "cor" function in the stats package.
 #' @param outfile : name of the file results will be saved.
-#'
+#' @param eq_threshold : the percent threshold for coefficient of variance to determine the point of stable equilibrium
+#' @param eq_var : the method for calculating variance through time.   choose from coefficient of variance (coef), percent variance (perVar), or the functions in "cor" function from the stats package.
 #' @return A list containing the following: details of the model including the date of
-#' simulation and parameter combinations, raw results at equilibrium, correlation tests at equilibrium for each test parameter, and if ld is selected linkage disequilibrium at each paramter combination
+#' simulation and parameter combinations, raw results at equilibrium, correlation tests at equilibrium for each test parameter, and if ld is selected linkage disequilibrium at each parameter combination
 #' @export
 #'
-#' @examples
+#'
+#' @examples : get_stats(results_file = ODE_results,test_parameters = c("sigmaBA = sigmaAB"),set_baseline = c(K = 200, lambda = 1, mu = 0.5),cor_param_method = c("ld", "pearson"), eq_threshold = 0.5, eq_var = coef, outfile = "Stats.rda")
+
+
 get_stats <- function(results_file = ODE_results,
                       test_parameters = c("sigmaBA = sigmaAB"),
                       set_baseline = c(K = 200, lambda = 1, mu = 0.5),
-                      cor_param_method = c("ld", "pearson"),
+                      cor_param_method = c("ld", "pearson"), eq_threshold = 0.5, eq_var = coef,
                       outfile = "Stats.rda"){
 
 
@@ -105,8 +109,13 @@ print(test_parameters)
     (sd(X)/mean(X))*100
   }
 
+#percent of variance
 
+perVar <- function(X){
+  (X[2,]-X[1,])/X[1,]
+}
 
+#(Current period amount – Prior period amount) / Prior period amount
 
  # finding the time system reaches stable equilibrium  and fill in the raw results
 
@@ -120,7 +129,7 @@ print(test_parameters)
       eq <- as.matrix(s[k:(k+1), ])
       VarC <- apply(eq[,-1], 2, FUN = coef)
       #print(VarC)
-      if(all(VarC <= 0.01, na.rm = T)){
+      if(all(VarC <= eq_threshold, na.rm = T)){
         eq_raw[i,] <- c(p, s[eq[1,1],])
         break
       }
@@ -186,7 +195,7 @@ print(test_parameters)
 
 
   # equilibrium proportions
-  if(is.na(test_parameters) == TRUE){
+  if(all(is.na(test_parameters)) == TRUE){
     par <- colnames(parameters)
     eq_met <- pivot_longer(eq_dat, all_of(par), names_to = "parameter")
   } else{
