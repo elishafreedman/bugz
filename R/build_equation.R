@@ -43,23 +43,28 @@ build_equations <- function(endo_s = endo_species, endo_no = endo_number){
 
     N_A <- paste(Ns[-(0:(k-1)*k + 1)], collapse = "+")
 
-    matT <- matrix(rep(NA, k), nrow = 1)
 
     # total number of species with symbiont A:
 
-    #matT <- matrix(rep("", k), nrow = 1)
-
     matrix0123 <- c(0:(k-1), k)
 
-    pA <- matrix(paste0("sigmaA^", matrix0123))
-    for(i in 0:(k-1)){
-      if(i>0){ # influx of A symbionts
-        matT[i+1] <- paste0("+betaA*(", N_A,")*", pA[i], "*N", i-1)
-      }
-      if(i<(k-1)) {#outflux of A endosymbionts
-        matT[i+1] <- paste0(matT[i+1], "-betaA*(", N_A,")*",pA[i+1], "*N", i)
-      }
-    }
+    pA <- paste0("sigmaA^", matrix0123)
+
+                 #matrix of transmission
+                 matT <- rep("", k)
+                 for(i in 0:(k-1)){
+                   if(i>0){ # influx of A symbionts
+                     matT[i+1] <- paste0("+betaA*(", N_A,")*", pA[i], "*N", i-1)
+                   }
+
+                   if(i<(k-1)) {#outflux of A endosymbionts
+                     matT[i+1] <- paste0(matT[i+1], "-betaA*(", N_A,")*", pA[i+1], "*N", i)
+                   }
+                 }
+
+
+
+
     matL <- matrix(rep(NA, k), nrow = 1)
     for(i in 0:(k-1)){
       matL[i+1] <- paste0("(-nuA)*N", i)
@@ -79,7 +84,7 @@ build_equations <- function(endo_s = endo_species, endo_no = endo_number){
 
 
 
-  else ###### two  types ########
+   ###### two  types ########
   if(endo_s == 2){
 
     # string for total population size:

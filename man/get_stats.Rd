@@ -38,6 +38,3 @@ simulation and parameter combinations, raw results at equilibrium, correlation t
 \description{
 get_stats
 }
-\examples{
-: get_stats(results_file = ODE_results,test_parameters = c("sigmaBA = sigmaAB"),set_baseline = c(K = 200, lambda = 1, mu = 0.5),cor_param_method = c("ld", "pearson"), eq_threshold = 0.5, eq_var = coef, outfile = "Stats.rda")
-}
