@@ -95,7 +95,7 @@ print(test_parameters)
   if(model_det$endo_species >= 2){
     eq_infect <- c("N00","A", "B", "A_plus", "B_plus", "coinf")
   }else{
-    eq_infect <- c("N00","A", "A_plus")
+    eq_infect <- c("N0","A", "A_plus")
   }
 
   # fill in the tables
@@ -112,7 +112,7 @@ print(test_parameters)
 #percent of variance
 
 perVar <- function(X){
-  (X[2,]-X[1,])/X[1,]
+  (X[2]-X[1])/X[1]
 }
 
 #(Current period amount – Prior period amount) / Prior period amount
@@ -127,8 +127,8 @@ perVar <- function(X){
     p <- to_test[[i]][["Parameters"]]
     for(k in 1:(nrow(s)-1)){
       eq <- as.matrix(s[k:(k+1), ])
-      VarC <- apply(eq[,-1], 2, FUN = coef)
-      #print(VarC)
+      VarC <- apply(eq[,-1], 2, FUN = eq_var)
+      print(VarC)
       if(all(VarC <= eq_threshold, na.rm = T)){
         eq_raw[i,] <- c(p, s[eq[1,1],])
         break
@@ -156,6 +156,7 @@ perVar <- function(X){
     B <- prop(eq_raw$N01)
     # double B
     #string pattern needed to recognise columns for species B co-infection
+    if(model_det$endo_species >=2){
     patB <- rep(NA, model_det$endo_no_per_sp)
     for(i in 2:model_det$endo_no_per_sp){
       patB[i] <- c(paste0("N0", i))
@@ -163,6 +164,7 @@ perVar <- function(X){
     #eq_2B <-eq_raw[eq_raw %in% patB]
     patB <- na.omit(patB)
     doubleB_prop <- c(prop(rowSums(eq_raw[eq_raw %in% patB])))
+    }
   }
   #prop single A
   A <- prop(eq_raw$N10)
@@ -172,15 +174,21 @@ perVar <- function(X){
 
   #string pattern needed to recognise columns for species A co-infections
   patA <- rep(NA, model_det$endo_no_per_sp)
+  if(model_det$endo_species >=2){
   for(i in 2:model_det$endo_no_per_sp){
     patA[i] <- c(paste0("N", i, "0"))
+    }
+  }else{
+    for(i in 2:model_det$endo_no_per_sp)
+    patA[i] <- c(paste0("N", i))
   }
   patA <- na.omit(patA)
   doubleA_prop <- c(prop(rowSums(eq_raw[eq_raw %in% patA])))
 
   #prop_uninfected
-  N00 <- prop(eq_raw[, "N00"])
+
   if(model_det$endo_species >=2){
+    N00 <- c(prop(eq_raw[, "N00"]))
     eq_dat <- cbind(eq_raw, data.frame("N00" = N00,
                                        "A" = A,
                                        "B" = B,
@@ -188,7 +196,8 @@ perVar <- function(X){
                                        "B_plus" = doubleB_prop,
                                        "coinf" = coinf))
   }else{
-    eq_dat <- cbind(eq_raw, data.frame("N00" = N00, "A" = A,
+    N0 <- c(prop(eq_raw[, "N0"]))
+    eq_dat <- cbind(eq_raw, data.frame("N0" = N0, "A" = A,
                                        "A_plus" = doubleA_prop))
   }
 
@@ -240,6 +249,7 @@ print(paste("Calculating correlations at equilibrium"))
       colnames(eq_p) <- cols
       for(i in 1:length(to_test)){
         eq_p[i,] <- to_test[[i]][["Parameters"]]
+        if(model_det$endo_species >=2){
         eq_ld[i,] <-ld(coinf = eq_dat$coinf[i],
                        N0 = eq_dat$N00[i],
                        A = eq_dat$A[i],
@@ -247,8 +257,16 @@ print(paste("Calculating correlations at equilibrium"))
                        A_plus = eq_dat$A_plus[i],
                        B_plus = eq_dat$B_plus[i])
 
-      }
+        }else{
+          eq_ld[i,] <-ld(coinf = eq_dat$coinf[i],
+                         N0 = eq_dat$N0[i],
+                         A = eq_dat$A[i],
+                         B = eq_dat$B[i],
+                         A_plus = eq_dat$A_plus[i],
+                         B_plus = eq_dat$B_plus[i])
+       }
       eq_ld <- cbind(eq_p, eq_ld)
+      }
     }else{
       eq_param_cor <- eq_av_prop %>% group_by(parameter, infection_status) %>% summarise(cor = cor(value, proportion, method = cor_param_method))
     }

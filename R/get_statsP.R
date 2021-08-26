@@ -123,7 +123,7 @@ eqR <- function(x = all_results){
     for(k in 1:(nrow(s)-1)){
       eq <- as.matrix(s[k:(k+1), ])
       VarC <- apply(eq[,-1], 2, FUN = coef)
-      #print(VarC)
+      print(VarC)
       if(all(VarC <= 0.01, na.rm = T)){
         eq_raw[i,] <- c(p, s[eq[1,1],])
         break
