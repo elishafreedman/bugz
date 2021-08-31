@@ -16,19 +16,20 @@
 #' @return data frame of all parameter combinations
 #' @export
 #'
-#' @examples
+#' @examples set_parameters(two_species = TRUE,K = 200,lambda = 1,mu = 0.5,betaA = seq(0.0001,0.001, 0.0001),betaB = seq(0.0001, 0.001, 0.0001),sigmaA = seq(0, 1, 0.1),sigmaB = seq(0,1,0.1),sigmaAB = seq(0,1, 0.1),sigmaBA  = seq(0,1,0.1),nuA = 0.01,nuB = 0.01)
+
 set_parameters <- function(two_species = TRUE,
-                              K = 200,
-                              lambda = 1,
-                              mu = 0.5,
-                              betaA = seq(0.0001,0.001, 0.0001),
-                              betaB = seq(0.0001, 0.001, 0.0001),
-                              sigmaA = seq(0, 1, 0.1),
-                              sigmaB = seq(0,1,0.1),
-                              sigmaAB = seq(0,1, 0.1),
-                              sigmaBA  = seq(0,1,0.1),
-                              nuA = 0.01,
-                              nuB = 0.01){
+                           K = 200,
+                           lambda = 1,
+                           mu = 0.5,
+                           betaA = seq(0.0001,0.001, 0.0001),
+                           betaB = seq(0.0001, 0.001, 0.0001),
+                           sigmaA = seq(0, 1, 0.1),
+                           sigmaB = seq(0,1,0.1),
+                           sigmaAB = seq(0,1, 0.1),
+                           sigmaBA  = seq(0,1,0.1),
+                           nuA = 0.01,
+                           nuB = 0.01){
 
 
   #creating the parameter list
@@ -48,17 +49,17 @@ set_parameters <- function(two_species = TRUE,
 
 
 
-  expand.grid(K= K,
-              lambda = lambda,
-              mu = mu,
-              betaA= betaA,
-              betaB = betaB,
-              sigmaA= sigmaA,
-              sigmaB = sigmaB,
-              sigmaAB = sigmaAB,
-              sigmaBA = sigmaBA,
-              nuA = nuA,
-              nuB = nuB)
+    expand.grid(K= K,
+                lambda = lambda,
+                mu = mu,
+                betaA= betaA,
+                betaB = betaB,
+                sigmaA= sigmaA,
+                sigmaB = sigmaB,
+                sigmaAB = sigmaAB,
+                sigmaBA = sigmaBA,
+                nuA = nuA,
+                nuB = nuB)
 
   }
 }
