@@ -70,5 +70,6 @@ plot_model <- function(results_file = ODE_results,
       theme(legend.title = element_text(size = 20))+
       ggtitle(bquote(atop(bold(.(title)),atop(bold(.(subtit)))))))
   }
-  while (!is.null(dev.list()))  dev.off()
+  while (!is.null(dev.list()))
+    dev.off()
 }

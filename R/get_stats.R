@@ -23,8 +23,7 @@ get_stats <- function(results_file = ODE_results,
                       test_parameters = c("sigmaBA = sigmaAB"),
                       set_baseline = c(K = 200, lambda = 1, mu = 0.5),
                       cor_param_method = c("ld", "pearson"),
-                      eq_threshold = 0.5,
-                      eq_var = coef) {
+                       r0 = TRUE) {
   #split for ease of indexing
   model_det <- results_file[["simulation_details"]]
   parameters <- results_file[["param_combos"]]
@@ -56,7 +55,7 @@ get_stats <- function(results_file = ODE_results,
   } else{
     to_testB <- all_results
   }
-  if (length(to_testB) == 0) {
+  if (length(to_testB) == 0){
     warning("Baseline values for parameters you would like to test were not simulated!")
   }
   print(test_parameters)
@@ -104,52 +103,6 @@ get_stats <- function(results_file = ODE_results,
     eq_infect <- c("N0", "A", "A_plus")
   }
 
-  # fill in the tables
-
-  # time till equilibrium
-
-  # checks variance across time point, coefficient of variance.
-
-  #coefficient of variance
-  coef <- function(X) {
-    (sd(X) / mean(X)) * 100
-  }
-
-  #percent of variance
-
-  perVar <- function(X) {
-    abs(X[2] - X[1] / X[1])
-  }
-
-  #(Current period amount – Prior period amount) / Prior period amount
-
-  # finding the time system reaches stable equilibrium  and fill in the raw results
-
-
-
-  print(paste("Finding timepoint where stable equilibrium is reached"))
-  for (i in 1:length(to_test)) {
-    s <- to_test[[i]][["Results"]]
-    p <- to_test[[i]][["Parameters"]]
-    for (k in 1:(nrow(s) - 1)) {
-      eq <- as.matrix(s[k:(k + 1),])
-      VarC <- apply(eq[, -1], 2, FUN = eq_var)
-      print(VarC)
-      if (all(VarC <= eq_threshold, na.rm = T)) {
-        eq_raw[i, ] <- c(p, s[k + 1, ])
-        break
-      }
-    }
-    print(paste("search for equilbrium at combination", i, "done"))
-    if (all(is.na(eq_raw))) {
-      warning(
-        "system did not reach a stable equilbrium at maximum timestep
-          (",
-        model_det$max_timesteps,
-        ")! \n statistics at equilibrium will not be calculated"
-      )
-    }
-  }
 
 
   # function to calculate the proportion at equilibrium
@@ -272,12 +225,10 @@ get_stats <- function(results_file = ODE_results,
   if (length(cor_param_method) >= 1) {
     if (any(cor_param_method == "ld")) {
       corT <- cor_param_method[grep("^[^ld]", cor_param_method)]
-      eq_param_cor <-
-        eq_av_prop |> dplyr::group_by(parameter, infection_status) |> dplyr::summarise(cor = cor(value, proportion, method = corT))
+      eq_param_cor <-eq_av_prop |> dplyr::group_by(parameter, infection_status) |> dplyr::summarise(cor = cor(value, proportion, method = corT))
       eq_ld <- data.frame("ld" = NA)
       cols <- c(colnames(to_test[[1]]$Parameters))
-      eq_p <-
-        data.frame(matrix(ncol = length(to_test[[1]]$Parameters)))
+      eq_p <-data.frame(matrix(ncol = length(to_test[[1]]$Parameters)))
       colnames(eq_p) <- cols
       for (i in 1:length(to_test)) {
         eq_p[i, ] <- to_test[[i]][["Parameters"]]
@@ -301,12 +252,18 @@ get_stats <- function(results_file = ODE_results,
             B_plus = eq_dat$B_plus[i]
           )
         }
-        eq_ld <- cbind(eq_p, eq_ld)
       }
+      eq_ld <- cbind(eq_p, eq_ld)
     } else{
-      eq_param_cor <-
-        eq_av_prop |> dplyr::group_by(parameter, infection_status) |> dplyr::summarise(cor = cor(value, proportion, method = cor_param_method))
+      eq_param_cor <- eq_av_prop |> dplyr::group_by(parameter, infection_status) |> dplyr::summarise(cor = cor(value, proportion, method = cor_param_method))
     }
+
+    #R0 calculations
+
+
+
+
+
     #prep file for saving
     if (any(cor_param_method == "ld")) {
       return(list(

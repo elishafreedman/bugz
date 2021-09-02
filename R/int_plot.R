@@ -6,8 +6,8 @@
 #' @param tmax : max number of timesteps
 #' @return A shiny application line graph of number of hosts with intracellular endosymbionts within the system at each timestep at each parameter combination.
 #' @export
-#'@import shiny
-#'@import ggplot2
+#' @import shiny
+#' @import ggplot2
 #' @examples params <- set_parameters(two_species = TRUE,K = 200,lambda = 1,mu = 0.5,betaA =0.001,betaB = 0.001,sigmaA = 0.1,sigmaB = 0.1,sigmaAB = 1,sigmaBA = seq(0, 1, 0.1),nuA = 0.01,nuB = 0.01)
 #' int_plot(parameters = params, endo_species = 2, endo_number = 1)
 #'
@@ -18,13 +18,6 @@ int_plot <-function(parameters = params, endo_species = 2, endo_number = 1, tmax
   times <- seq(0,tmax, 1)
   mins <- head(parameters, 1)
   maxs <- tail(parameters, 1)
-  if(endo_species == 2){
-    k <- (endo_species+1)^(endo_number)-1
-    cols <-  grDevices::colorRampPalette(c("royalblue3","orange", "red"))(k)
-  }else{
-    k <- (endo_species+1)^(endo_number)-1
-    cols <-  grDevices::colorRampPalette(c("royalblue3","blue"))(k)
-  }
 
   ini_state <- c(rep(0, length(ins)))
   names(ini_state) <- c(ins)
@@ -52,7 +45,10 @@ int_plot <-function(parameters = params, endo_species = 2, endo_number = 1, tmax
                     mu = mins$mu,
                     nuA = mins$nuA,
                     nuB = mins$nuB,
-                    tmax = tmax){
+                    tmax = tmax,
+                    endo_sp = endo_species,
+                    endo_num = endo_number
+                    ){
     if(endo_species == 2){
       int_param <- c(K=K,
                      lambda = lambda,
@@ -81,7 +77,13 @@ int_plot <-function(parameters = params, endo_species = 2, endo_number = 1, tmax
     #run model
     initial_plot <- data.frame(deSolve::ode(inistat, time, equation, int_param))
 
-
+    if(endo_species == 2){
+      k <- (endo_sp+1)^(endo_num)-1
+      cols <-  grDevices::colorRampPalette(c("royalblue3","orange", "red"))(k)
+    }else{
+      k <- (endo_sp+1)^(endo_num)-1
+      cols <-  grDevices::colorRampPalette(c("royalblue3","blue"))(k)
+    }
     #reformat
     col <- c(colnames(initial_plot[,-1]))
     initial_plot <- tidyr::pivot_longer(initial_plot, all_of(col), names_to = "infection_status")
@@ -95,7 +97,7 @@ int_plot <-function(parameters = params, endo_species = 2, endo_number = 1, tmax
       xlab(label="Timesteps")+
       labs(colour = "infection status \n         A  B",
            linetype = "infection status \n         A  B")+
-      #scale_colour_manual(values=c("black",  cols))+
+      scale_colour_manual(values=c("black", cols))+
       theme_classic()+
       theme(axis.text = element_text(size = 20))+
       theme(axis.title = element_text(size =20))+
