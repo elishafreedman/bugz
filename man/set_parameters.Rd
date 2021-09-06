@@ -50,3 +50,6 @@ data frame of all parameter combinations
 \description{
 set_parameters
 }
+\examples{
+set_parameters(two_species = TRUE,K = 200,lambda = 1,mu = 0.5,betaA = seq(0.0001,0.001, 0.0001),betaB = seq(0.0001, 0.001, 0.0001),sigmaA = seq(0, 1, 0.1),sigmaB = seq(0,1,0.1),sigmaAB = seq(0,1, 0.1),sigmaBA  = seq(0,1,0.1),nuA = 0.01,nuB = 0.01)
+}

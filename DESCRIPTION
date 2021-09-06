@@ -8,12 +8,12 @@ Description: Simulating the spread of endosymbiont infections throughout hosts u
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Imports:dplyr,
-         tidyr,
-         ggplot2, 
-         deSolve, 
-          shiny, 
-          stats, 
-          pbapply, 
-          parallel
+Imports:shiny,
+        ggplot2, 
+        deSolve,
+        tidyr,
+        dplyr,
+        stats, 
+        grDevices,
+        utils
 RoxygenNote: 7.1.1

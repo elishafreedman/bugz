@@ -9,8 +9,6 @@ run_model(
   endo_number = 2,
   parameters = params,
   tmax = 1000,
-  int_plot = TRUE,
-  save_results = c(TRUE, outfile = "ODE_results.rda"),
   core_spec = NA
 )
 }
@@ -23,17 +21,17 @@ run_model(
 
 \item{tmax}{: The maximum number of time steps}
 
-\item{int_plot}{: if TRUE launches a shiny app for quick glances of results}
-
-\item{save_results}{: If TRUE saves the results as a list with the selected file name.}
-
 \item{core_spec}{: If the number of parameter combinations is large it may be wise to assign multiple cores for speed. if NA, number of cores used in process will be set at half the number of cores available for use on the computer.}
 }
 \value{
-Shiny app of all results and /or  a list containing the details of the model,
+list containing the details of the model,
 a data frame of all parameter combinations,
 and a list of model results for each parameter combination.
 }
 \description{
 run_model
+}
+\examples{
+params <- set_parameters(two_species = TRUE,K = 200,lambda = 1,mu = 0.5,betaA =0.001,betaB = 0.001,sigmaA = 0.1,sigmaB = 0.1,sigmaAB = 1,sigmaBA = seq(0, 1, 0.1),nuA = 0.01,nuB = 0.01)
+run_model(endo_species = 2,endo_number = 2,parameters = params,tmax = 1000,core_spec = NA, outfile = "ODE_results.rda")
 }
