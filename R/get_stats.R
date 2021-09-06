@@ -16,18 +16,20 @@
 #' @export
 #'
 #'
-#' @examples get_stats(results_file = ODE_results,test_parameters = c("sigmaBA = sigmaAB"),set_baseline = c(K = 200, lambda = 1, mu = 0.5),cor_param_method = c("ld", "pearson"), eq_threshold = 0.5, eq_var = coef,core_spec = 2)
+#' @examples get_stats(results_file = ODE_results,test_parameters = c("sigmaBA = sigmaAB"),set_baseline = c(K = 200, lambda = 1, mu = 0.5),cor_param_method = c("ld", "pearson"))
 
 
 get_stats <- function(results_file = ODE_results,
                       test_parameters = c("sigmaBA = sigmaAB"),
                       set_baseline = c(K = 200, lambda = 1, mu = 0.5),
                       cor_param_method = c("ld", "pearson"),
-                       r0 = TRUE) {
+                       r0 = TRUE){
   #split for ease of indexing
   model_det <- results_file[["simulation_details"]]
-  parameters <- results_file[["param_combos"]]
-  all_results <- results_file[["simulations"]]
+
+  parameters <- results_file[["equilibrium_results"]][, grep("^[^N, ^time]", colnames(test))]
+  all_results <-results_file[["equilibrium_results"]]
+ #(all_results)
 
 
   #store stats
@@ -47,21 +49,19 @@ get_stats <- function(results_file = ODE_results,
   #add sigmaA and sigmaB match and sigmaAB and BA match and beta match options
 
   #subset  the baseline parameters
-  if (length(set_baseline >= 1) && is.na(set_baseline) == FALSE) {
-    to_testB <-
-      lapply(all_results, function(x)
-        x[all(set_baseline %in% x$Parameters)])
-    to_testB <- to_testB[lapply(to_testB, length) > 0]
+  if (length(set_baseline >= 1) && is.na(set_baseline) == FALSE){
+    to_testB <- all_results[all_results[,c(names(set_baseline))] %in% set_baseline,]
   } else{
     to_testB <- all_results
   }
+
   if (length(to_testB) == 0){
     warning("Baseline values for parameters you would like to test were not simulated!")
   }
   print(test_parameters)
   #isolating parameter combinations of interest from the dataset
   if (length(test_parameters >= 1) &&
-      is.na(test_parameters) == FALSE) {
+      is.na(test_parameters) == FALSE){
     if(model_det$endo_species >= 2){
     #subset the matched parameters from the test_parameters arguments
     #create vector to  match
@@ -77,9 +77,7 @@ get_stats <- function(results_file = ODE_results,
     )
 
     }
-    to_test <- lapply(to_testB, function(x)
-        x[unique(x$Parameters[, test_parameters]) %in% x$Parameters])
-    to_test <- to_test[lapply(to_test, length) > 0]
+    to_test <- to_testB[unique(to_testB[,test_parameters]) %in% to_testB]
   } else{
     to_test <- to_testB
   }
@@ -87,14 +85,14 @@ get_stats <- function(results_file = ODE_results,
     warning("Parameter combinations you would like to test were not simulated!")
   }
 
+  print(to_test)
   # stats at equilibrium #
 
   # raw results for each parameter at equilibrium
-  colength <- rep(NA, ncol(to_test[[1]][["Results"]]) + ncol(parameters))
-  eq_raw <- as.data.frame(matrix(NA, nrow = length(to_test),
-                                 ncol = length(colength)))
-  colnames(eq_raw) <- c(colnames(parameters),
-                        colnames(to_test[[1]]$Results))
+  # colength <- rep(NA, ncol(to_test) + ncol(parameters))
+  # to_test <- as.data.frame(matrix(NA, nrow = length(to_test),
+  #                                ncol = length(colength)))
+  # colnames(to_test) <- c(colnames(to_test))
 
   #fill in parameters and and  infection status
   if (model_det$endo_species >= 2) {
@@ -113,33 +111,32 @@ get_stats <- function(results_file = ODE_results,
 
   #proportion co-infected
   if (model_det$endo_species >= 2) {
-    coinf <-
-      c(rowSums(eq_raw[, grep("^[^0slnbtKm]*$", colnames(eq_raw))]))
+    coinf <- c(rowSums(to_test[, grep("^[^0slnbtKm]*$", colnames(to_test))]))
     #create vector that will be used later on for the pivot longer
     #prop single B
-    B <- prop(eq_raw$N01)
+    B <- prop(to_test$N01)
     # double B
     #string pattern needed to recognise columns for species B co-infection
-    if (model_det$endo_species >= 2) {
+    if (model_det$endo_species >= 2){
       patB <- rep(NA, model_det$endo_no_per_sp)
       for (i in 2:model_det$endo_no_per_sp) {
         patB[i] <- c(paste0("N0", i))
       }
-      #eq_2B <-eq_raw[eq_raw %in% patB]
+      #eq_2B <-to_test[to_test %in% patB]
       patB <- na.omit(patB)
-      doubleB_prop <- c(prop(rowSums(eq_raw[eq_raw %in% patB])))
+      doubleB_prop <- c(prop(rowSums(to_test[to_test %in% patB])))
     }
   }
   #prop single A
-  A <- prop(eq_raw$N10)
+  A <- prop(to_test$N10)
 
 
   # single species co-infections
 
   #string pattern needed to recognise columns for species A co-infections
   patA <- rep(NA, model_det$endo_no_per_sp)
-  if (model_det$endo_species >= 2) {
-    for (i in 2:model_det$endo_no_per_sp) {
+  if (model_det$endo_species >= 2){
+    for (i in 2:model_det$endo_no_per_sp){
       patA[i] <- c(paste0("N", i, "0"))
     }
   } else{
@@ -147,14 +144,14 @@ get_stats <- function(results_file = ODE_results,
       patA[i] <- c(paste0("N", i))
   }
   patA <- na.omit(patA)
-  doubleA_prop <- c(prop(rowSums(eq_raw[eq_raw %in% patA])))
+  doubleA_prop <- c(prop(rowSums(to_test[to_test %in% patA])))
 
   #prop_uninfected
 
   if (model_det$endo_species >= 2) {
-    N00 <- c(prop(eq_raw[, "N00"]))
+    N00 <- c(prop(to_test[, "N00"]))
     eq_dat <- cbind(
-      eq_raw,
+      to_test,
       data.frame(
         "N00" = N00,
         "A" = A,
@@ -165,8 +162,8 @@ get_stats <- function(results_file = ODE_results,
       )
     )
   } else{
-    N0 <- c(prop(eq_raw[, "N0"]))
-    eq_dat <- cbind(eq_raw, data.frame(
+    N0 <- c(prop(to_test[, "N0"]))
+    eq_dat <- cbind(to_test, data.frame(
       "N0" = N0,
       "A" = A,
       "A_plus" = doubleA_prop
@@ -269,7 +266,7 @@ get_stats <- function(results_file = ODE_results,
       return(list(
         model_det = model_det,
         "equilibrum_stats" = list(
-          "Results" = eq_raw,
+          "Results" = to_test,
           "Proportion" = eq_av_prop ,
           "correlations" = eq_param_cor,
           "ld" = eq_ld
@@ -279,7 +276,7 @@ get_stats <- function(results_file = ODE_results,
       return(list(
         "model_det" = model_det,
         "equilibrum_stats" = list(
-          "Results" = eq_raw,
+          "Results" = to_test,
           "Proportion" = eq_av_prop ,
           "correlation" = eq_param_cor
         )
