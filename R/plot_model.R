@@ -2,15 +2,13 @@
 #'
 #' @param results_file : results
 #' @param plot_file : file name to save plots
-#' @param colours : a vector specifying the colour ramp
 #' @return PDF of plots of results over timesteps
 #' @import ggplot2
 #' @export
 #'
-#' @examples plot_model(results_file = ODE_results, plot_file = "ODE_Plot.pdf", colours = c("royalblue3","orange", "red"))
+#' @examples plot_model(results_file = ODE_results, plot_file = "ODE_Plot.pdf", Colors = c("royalblue3","orange", "red"))
 
 plot_model <- function(results_file = ODE_results,
-                       colours = c("royalblue3","orange", "red"),
                        plot_file = "ODE_Plot.pdf"){
 
   model_det <- results_file[["simulation_details"]]
@@ -18,10 +16,10 @@ plot_model <- function(results_file = ODE_results,
   all_results <- results_file[["simulations"]]
   if(model_det$endo_species == 2){
     k <- (model_det$endo_species+1)^(model_det$endo_no_per_sp)-1
-    cols <-  grDevices::colorRampPalette(colours)(k)
+    cols <-  grDevices::colorRampPalette(c("blue","orange","red"))(k)
   }else{
     k <- (model_det$endo_species+1)^(model_det$endo_no_per_sp)-1
-    cols <-  grDevices::colorRampPalette(colours)(k)
+    cols <-  grDevices::colorRampPalette(c("deepskyblue", "blue", "green"))(k)
   }
   pdf(file = plot_file)
       for(i in all_results){
@@ -55,12 +53,10 @@ plot_model <- function(results_file = ODE_results,
     print(ggplot(initial_plot)+
       geom_line(aes(x=time, y = value,
                     colour = infection_status,
-                    group = infection_status,
-                    linetype = infection_status), size = 1.5)+
+                    group = infection_status), size = 1.5)+
       ylab(label="# Host species")+
       xlab(label="Timesteps")+
-      labs(colour = "infection status \n         A  B",
-           linetype = "infection status \n         A  B")+
+      labs(colour = "infection status \n         A  B")+
       scale_colour_manual(values=c("black",  cols))+
       theme_classic()+
       theme(axis.text = element_text(size = 20))+

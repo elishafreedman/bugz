@@ -6,14 +6,14 @@
 \usage{
 plot_model(
   results_file = ODE_results,
-  colours = c("royalblue3", "orange", "red"),
+  colors = c("royalblue3", "orange", "red"),
   plot_file = "ODE_Plot.pdf"
 )
 }
 \arguments{
 \item{results_file}{: results}
 
-\item{colours}{: a vector specifying the colour ramp}
+\item{colors}{: a vector  of colors specifying the colour ramp}
 
 \item{plot_file}{: file name to save plots}
 }

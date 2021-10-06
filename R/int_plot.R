@@ -4,30 +4,49 @@
 #' @param endo_species : number of endosymbiont species no
 #' @param endo_number : number of individuals per species
 #' @param tmax : max number of timesteps
+#' @param host_dem : if TRUE, host demographics (speciation, and extinction) will be included in the simulation.
 #' @return A shiny application line graph of number of hosts with intracellular endosymbionts within the system at each timestep at each parameter combination.
 #' @export
 #' @import shiny
 #' @import ggplot2
 #' @examples params <- set_parameters(two_species = TRUE,K = 200,lambda = 1,mu = 0.5,betaA =0.001,betaB = 0.001,sigmaA = 0.1,sigmaB = 0.1,sigmaAB = 1,sigmaBA = seq(0, 1, 0.1),nuA = 0.01,nuB = 0.01)
 #' int_plot(parameters = params, endo_species = 2, endo_number = 1)
-#'
-int_plot <-function(parameters = params, endo_species = 2, endo_number = 1, tmax = 2500){
-  eqn <- build_equations(endo_s = endo_species, endo_no = endo_number)
+int_plot <-function(parameters = params, endo_species = 2, endo_number = 1, tmax = 2500, host_dem = TRUE){
+  eqn <- build_equations(endo_s = endo_species, endo_no = endo_number, host = host_dem)
   ins <- eqn[["states"]]
   eqn_s <- eqn[["equations"]]
   times <- seq(0,tmax, 1)
   mins <- head(parameters, 1)
   maxs <- tail(parameters, 1)
 
-  ini_state <- c(rep(0, length(ins)))
-  names(ini_state) <- c(ins)
-  ini_state <- dplyr::case_when(
-    names(ini_state) == "N0"  ~  parameters$K[1] * parameters$mu[1],
-    names(ini_state) == "N00" ~  parameters$K[1] * parameters$mu[1],
-    names(ini_state) == "N1"   ~  1,
-    names(ini_state) == "N01"  ~  1,
-    names(ini_state) == "N10"  ~ 1
-  )
+  # create initial states vector #
+  if(host_dem == TRUE){
+    ini_state <- c(rep(0, length(ins)))
+    names(ini_state) <- c(ins)
+    ini_state <- dplyr::case_when(
+      names(ini_state) == "N0"~ parameters$K[1] * parameters$mu[1],
+      names(ini_state) == "N00"~parameters$K[1] * parameters$mu[1],
+      names(ini_state) == "N1"~1,
+      names(ini_state) == "N01"~1,
+      names(ini_state) == "N10"~1
+    )
+
+    ini_state[is.na(ini_state)] <-  0
+    names(ini_state) <- c(ins)
+  }else{
+    ini_state <- c(rep(0, length(ins)))
+    names(ini_state) <- c(ins)
+    ini_state <- dplyr::case_when(
+      names(ini_state) == "N0"~parameters$K[1],
+      names(ini_state) == "N00"~parameters$K[1],
+      names(ini_state) == "N1"~ 1,
+      names(ini_state) == "N01"~1,
+      names(ini_state) == "N10"~1
+    )
+    ini_state[is.na(ini_state)] <-  0
+    names(ini_state) <- c(ins)
+  }
+
 
   ini_state[is.na(ini_state)] <-  0
   names(ini_state) <- c(ins)
@@ -76,14 +95,17 @@ int_plot <-function(parameters = params, endo_species = 2, endo_number = 1, tmax
     }
     #run model
     initial_plot <- data.frame(deSolve::ode(inistat, time, equation, int_param))
+print(ncol(initial_plot))
 
-    if(endo_species == 2){
-      k <- (endo_sp+1)^(endo_num)-1
-      cols <-  grDevices::colorRampPalette(c("royalblue3","orange", "red"))(k)
+
+    if(endo_sp == 2){
+      # k <- (endo_sp+1)^(endo_num)-1
+     cols <- grDevices::colorRampPalette(c("blue", "orange", "red"))(ncol(initial_plot)-2)
     }else{
-      k <- (endo_sp+1)^(endo_num)-1
-      cols <-  grDevices::colorRampPalette(c("royalblue3","blue"))(k)
+      # k <- endo_num-1
+      cols <-  grDevices::colorRampPalette(c("deepskyblue", "blue", "green"))(ncol(initial_plot)-2)
     }
+
     #reformat
     col <- c(colnames(initial_plot[,-1]))
     initial_plot <- tidyr::pivot_longer(initial_plot, all_of(col), names_to = "infection_status")
@@ -91,12 +113,10 @@ int_plot <-function(parameters = params, endo_species = 2, endo_number = 1, tmax
     ggplot2::ggplot(initial_plot)+
       geom_line(aes(x=time, y = value,
                     colour = infection_status,
-                    group = infection_status,
-                    linetype = infection_status), size = 1.5)+
+                    group = infection_status), size = 1.5)+
       ylab(label="# Host species")+
       xlab(label="Timesteps")+
-      labs(colour = "infection status \n         A  B",
-           linetype = "infection status \n         A  B")+
+      labs(colour = "infection status \n         A  B")+
       scale_colour_manual(values=c("black", cols))+
       theme_classic()+
       theme(axis.text = element_text(size = 20))+

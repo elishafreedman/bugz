@@ -14,14 +14,11 @@
 
 #single transmission rate model added here represented by the argument "endosymbiont type"
 
-build_equations <- function(endo_s = endo_species, endo_no = endo_number) {
+build_equations <- function(endo_s = endo_species, endo_no = endo_number, host = host_dem){
   k <- endo_no + 1 #number of endosymbionts (including the uninfected state)
-
-
-  #max types = 2 at the moment
-  if (endo_s == 1) {
+  if(endo_s == 1){
     Ns <- rep("", k)
-    for (i in 0:(k - 1)) {
+    for (i in 0:(k - 1)){
       Ns[i + 1] <- paste0("N", i)
     }
     NN <- paste(Ns, collapse = "+")
@@ -29,15 +26,19 @@ build_equations <- function(endo_s = endo_species, endo_no = endo_number) {
     # left sides of equations:
     leftSides <- paste0("d", Ns)
 
+    if(host == TRUE){
     # matrix of terms for demography:
     matD <- matrix(rep(NA, k), nrow = 1)
-    for (i in 0:(k - 1)) {
+    for (i in 0:(k - 1)){
       matD[i + 1] <-
         paste0("lambda*N", i, "*(1 - (", NN, ")/K) - mu*N", i)
     }
     dim(matD) <- NULL
+  }else{
+  matD = NA
+ }
 
-    # matrix of terms for the  influx force of infection
+  # matrix of terms for the  influx force of infection
 
     # matrix for transmission events:
 
@@ -53,17 +54,15 @@ build_equations <- function(endo_s = endo_species, endo_no = endo_number) {
 
     #matrix of transmission
     matT <- rep("", k)
-    for (i in 0:(k - 1)) {
-      if (i > 0) {
+    for (i in 0:(k - 1)){
+      if (i > 0){
         # influx of A symbionts
-        matT[i + 1] <-
-          paste0("+betaA*(", N_A, ")*", pA[i], "*N", i - 1)
+        matT[i + 1] <- paste0("+betaA*(", N_A, ")*", pA[i], "*N", i - 1)
       }
 
-      if (i < (k - 1)) {
+      if (i < (k - 1)){
         #outflux of A endosymbionts
-        matT[i + 1] <-
-          paste0(matT[i + 1], "-betaA*(", N_A, ")*", pA[i + 1], "*N", i)
+        matT[i + 1] <- paste0(matT[i + 1], "-betaA*(", N_A, ")*", pA[i + 1], "*N", i)
       }
     }
 
@@ -83,18 +82,16 @@ build_equations <- function(endo_s = endo_species, endo_no = endo_number) {
       else
         matG[i + 1] <- "0"
     }
-  }
-
-
+ }
 
 
 
   ###### two  types ########
-  if (endo_s == 2) {
+  if (endo_s == 2){
     # string for total population size:
     Ns <- rep("", k ^ 2)
-    for (i in 0:(k - 1)) {
-      for (j in 0:(k - 1)) {
+    for (i in 0:(k - 1)){
+      for (j in 0:(k - 1)){
         Ns[k * j + i + 1] <- paste0("N", i, j)
       }
     }
@@ -104,15 +101,18 @@ build_equations <- function(endo_s = endo_species, endo_no = endo_number) {
     # left sides of equations:
     leftSides <- paste0("d", Ns)
 
+    if(host == TRUE){
     # matrix of terms for demography:
     matD <- matrix(rep(NA, k ^ 2), nrow = k)
-    for (i in 0:(k - 1)) {
-      for (j in 0:(k - 1)) {
-        matD[i + 1, j + 1] <-
-          paste0("lambda*N", i, j, "*(1 - (", NN, ")/K) - mu*N", i, j)
+    for (i in 0:(k - 1)){
+      for (j in 0:(k - 1)){
+        matD[i + 1, j + 1] <-paste0("lambda*N", i, j, "*(1 - (", NN, ")/K) - mu*N", i, j)
       }
     }
     dim(matD) <- NULL
+  }else{
+    matD = NULL
+  }
     # matrix of terms for the  influx force of infection
 
     # matrix for transmission events:
@@ -127,10 +127,8 @@ build_equations <- function(endo_s = endo_species, endo_no = endo_number) {
     # calculate pA an pB matrices (inhibition of transmission caused by pre-existing symbionts)
     matrix0123 <- matrix(rep(0:(k - 1), k), nrow = k)
 
-    pA <-
-      matrix(paste0("sigmaA^", matrix0123, "*sigmaBA^", t(matrix0123)), nrow = k)
-    pB <-
-      matrix(paste0("sigmaB^", t(matrix0123), "*sigmaAB^", matrix0123),  nrow = k)
+    pA <- matrix(paste0("sigmaA^", matrix0123, "*sigmaBA^", t(matrix0123)), nrow = k)
+    pB <- matrix(paste0("sigmaB^", t(matrix0123), "*sigmaAB^", matrix0123),  nrow = k)
 
     #matrix of transmission
     matT <- matrix(rep("", (k) ^ 2), nrow = k, byrow = TRUE)
@@ -180,9 +178,14 @@ build_equations <- function(endo_s = endo_species, endo_no = endo_number) {
             paste0(matG[i + 1, j + 1], " + ", j + 1, "*nuB*N", i, j + 1)
       }
     }
+ }
+
+if(host == TRUE){
+  equations <-  paste0("    ", leftSides, " = ", matD, matT, " + ", matL, " + ", matG, "\n")
+  }else{
+    equations <- paste0("    ", leftSides, " = ", matT, " + ", matL, " + ", matG, "\n")
   }
-  equations <-
-    paste0("    ", leftSides, " = ", matD, matT, " + ", matL, " + ", matG, "\n")
+
   equations <- paste0(equations, collapse = "\n")
   functionFront <-
     "ODEsystem <- function(times, states, parameters){\n  with(as.list(c(states, parameters)),{\n"
@@ -204,4 +207,5 @@ build_equations <- function(endo_s = endo_species, endo_no = endo_number) {
     states = Ns
   )
   return(ODE)
-}
+ }
+

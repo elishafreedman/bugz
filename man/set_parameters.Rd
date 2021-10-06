@@ -6,6 +6,7 @@
 \usage{
 set_parameters(
   two_species = TRUE,
+  dems = TRUE,
   K = 200,
   lambda = 1,
   mu = 0.5,

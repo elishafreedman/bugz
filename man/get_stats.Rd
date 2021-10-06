@@ -9,8 +9,7 @@ get_stats(
   test_parameters = c("sigmaBA = sigmaAB"),
   set_baseline = c(K = 200, lambda = 1, mu = 0.5),
   cor_param_method = c("ld", "pearson"),
-  eq_threshold = 0.5,
-  eq_var = coef
+  r0 = TRUE
 )
 }
 \arguments{

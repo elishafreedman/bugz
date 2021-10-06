@@ -4,7 +4,14 @@
 \alias{int_plot}
 \title{int_plot}
 \usage{
-int_plot(parameters = params, endo_species = 2, endo_number = 1, tmax = 2500)
+int_plot(
+  parameters = params,
+  endo_species = 2,
+  endo_number = 1,
+  tmax = 2500,
+  host_dem = TRUE,
+  colors = c("red", "orange", "blue")
+)
 }
 \arguments{
 \item{parameters}{: parameter combinations that will be simulated}
@@ -14,6 +21,10 @@ int_plot(parameters = params, endo_species = 2, endo_number = 1, tmax = 2500)
 \item{endo_number}{: number of individuals per species}
 
 \item{tmax}{: max number of timesteps}
+
+\item{host_dem}{: if TRUE, host demographics (speciation, and extinction) will be included in the simulation.}
+
+\item{colors}{: a vector  of colors specifying the colour ramp}
 }
 \value{
 A shiny application line graph of number of hosts with intracellular endosymbionts within the system at each timestep at each parameter combination.
