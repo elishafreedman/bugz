@@ -5,13 +5,14 @@
 #' @param endo_number : number of individuals per species
 #' @param tmax : max number of timesteps
 #' @param host_dem : if TRUE, host demographics (speciation, and extinction) will be included in the simulation.
+#' @param Colors :  vector of colours to be included in the graph
 #' @return A shiny application line graph of number of hosts with intracellular endosymbionts within the system at each timestep at each parameter combination.
 #' @export
 #' @import shiny
 #' @import ggplot2
 #' @examples params <- set_parameters(two_species = TRUE,K = 200,lambda = 1,mu = 0.5,betaA =0.001,betaB = 0.001,sigmaA = 0.1,sigmaB = 0.1,sigmaAB = 1,sigmaBA = seq(0, 1, 0.1),nuA = 0.01,nuB = 0.01)
 #' int_plot(parameters = params, endo_species = 2, endo_number = 1)
-int_plot <-function(parameters = params, endo_species = 2, endo_number = 1, tmax = 2500, host_dem = TRUE){
+int_plot <-function(parameters = params, endo_species = 2, endo_number = 1, tmax = 2500, host_dem = TRUE, Colors = c("blue","orange", "red")){
   eqn <- build_equations(endo_s = endo_species, endo_no = endo_number, host = host_dem)
   ins <- eqn[["states"]]
   eqn_s <- eqn[["equations"]]
@@ -95,15 +96,15 @@ int_plot <-function(parameters = params, endo_species = 2, endo_number = 1, tmax
     }
     #run model
     initial_plot <- data.frame(deSolve::ode(inistat, time, equation, int_param))
-print(ncol(initial_plot))
+# print(ncol(initial_plot))
 
 
     if(endo_sp == 2){
       # k <- (endo_sp+1)^(endo_num)-1
-     cols <- grDevices::colorRampPalette(c("blue", "orange", "red"))(ncol(initial_plot)-2)
+     cols <- grDevices::colorRampPalette(Colors)(ncol(initial_plot)-2)
     }else{
       # k <- endo_num-1
-      cols <-  grDevices::colorRampPalette(c("deepskyblue", "blue", "green"))(ncol(initial_plot)-2)
+      cols <-  grDevices::colorRampPalette(Colors)(ncol(initial_plot)-2)
     }
 
     #reformat

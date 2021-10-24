@@ -11,15 +11,18 @@
 get_equi_points<- function(results_file = OD_results, eq_threshold = 0.5,
                            eq_var = coef){
   #coefficient of variance
-  coef <- function(X) {
+  coef <- function(X){
     (sd(X) / mean(X)) * 100
   }
 
   #percent of variance
 
-  perVar <- function(X) {
-    abs((X[2] - X[1])/X[1])
+  perVar <- function(X){
+   abs((X[2] - X[1])/X[1])
   }
+
+
+
 
   # finding the time system reaches stable equilibrium  and fill in the raw results
 

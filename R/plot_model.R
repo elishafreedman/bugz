@@ -2,24 +2,25 @@
 #'
 #' @param results_file : results
 #' @param plot_file : file name to save plots
+#' @param Colors :  vector of colours to be included in the graph
 #' @return PDF of plots of results over timesteps
 #' @import ggplot2
 #' @export
 #'
-#' @examples plot_model(results_file = ODE_results, plot_file = "ODE_Plot.pdf", Colors = c("royalblue3","orange", "red"))
+#' @examples plot_model(results_file = ODE_results, plot_file = "ODE_Plot.pdf", Colors = c("blue","orange", "red"))
 
 plot_model <- function(results_file = ODE_results,
-                       plot_file = "ODE_Plot.pdf"){
+                       plot_file = "ODE_Plot.pdf", Colors = c("blue","orange", "red")){
 
   model_det <- results_file[["simulation_details"]]
   parameters <- results_file[["param_combos"]]
   all_results <- results_file[["simulations"]]
   if(model_det$endo_species == 2){
     k <- (model_det$endo_species+1)^(model_det$endo_no_per_sp)-1
-    cols <-  grDevices::colorRampPalette(c("blue","orange","red"))(k)
+    cols <-  grDevices::colorRampPalette(c(Colors))(k)
   }else{
     k <- (model_det$endo_species+1)^(model_det$endo_no_per_sp)-1
-    cols <-  grDevices::colorRampPalette(c("deepskyblue", "blue", "green"))(k)
+    cols <-  grDevices::colorRampPalette(c(Colors))(k)
   }
   pdf(file = plot_file)
       for(i in all_results){

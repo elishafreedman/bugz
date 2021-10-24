@@ -104,6 +104,9 @@ run_model <- function(endo_species = 2,
   results <- pbapply::pbapply(parameters, 1, ode_calc, cl = clust)
   parallel::stopCluster(clust)
 
+  #remove rows in
+  results  <- lapply(results$simulation, function(x) x$Results[x$Results, all(cols(x$Results) !=0)])
+
   return(
     list(
       simulation_details = sim_details,
