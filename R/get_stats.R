@@ -30,18 +30,16 @@ get_stats <- function(results_file = ODE_results,
 
   #subset  the baseline parameters
   if (length(set_baseline >= 1) && is.na(set_baseline) == FALSE){
-    to_testB <-
-      lapply(all_results, function(x)
-        x[all(set_baseline %in% x$Parameters)])
+    to_testB <- lapply(all_results, function(x) x[all(set_baseline %in% x$Parameters)])
     to_testB <- to_testB[lapply(to_testB, length) > 0]
   } else{
     to_testB <- all_results
   }
+
   if (length(to_testB) == 0){
     warning("Baseline values for parameters you would like to test were not simulated!")
-  }
   #isolating parameter combinations of interest from the dataset
-    if(model_det$endo_species >= 2){
+    #if(model_det$endo_species >= 2){
     #subset the matched parameters from the test_parameters arguments
     #create vector to  match
     dplyr::case_when(test_parameters == "sigmaAB = sigmaBA" ~ "sigmaAB",
@@ -52,14 +50,13 @@ get_stats <- function(results_file = ODE_results,
       test_parameters == "betaA = betaB" ~ "betaA",
       test_parameters == "nuA = nuB" ~ "nuA",
       test_parameters == "nuB = nuA" ~ "nuA")
-    }
-    print(test_parameters)
+    #print(test_parameters)
     to_test <- lapply(to_testB, function(x)
         x[unique(x$Parameters[, test_parameters]) %in% x$Parameters])
     to_test <- to_test[lapply(to_test, length) > 0]
-  } else{
-    to_test <- to_testB
-  }
+   } else{
+     to_test <- to_testB
+   }
   if (length(to_test) == 0){
     warning("Parameter combinations you would like to test were not simulated!")
   }
@@ -267,5 +264,5 @@ get_stats <- function(results_file = ODE_results,
         )
       ))
     }
- }
+  }
 }
