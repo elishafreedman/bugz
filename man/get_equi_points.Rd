@@ -2,16 +2,25 @@
 % Please edit documentation in R/get_equil_points.R
 \name{get_equi_points}
 \alias{get_equi_points}
-\title{Title}
+\title{get_equil_points}
 \usage{
-get_equi_points(results_file = OD_results, eq_threshold = 0.5, eq_var = coef)
+get_equi_points(results_file = ODE_results, eq_threshold = 0.5, eq_var = coef)
 }
 \arguments{
-\item{eq_var}{}
+\item{results_file}{: file containing results.}
+
+\item{eq_threshold}{: the threshold of variation between each time point at different.}
+
+\item{eq_var}{: variance test for comparison.}
 }
 \value{
 
 }
 \description{
-Title
+get_equil_points
+}
+\examples{
+params <- set_parameters(sigmaA = 0.1, sigmaAB = 0.1, sigmaB = 0.1)
+ODE_results <- run_model()
+equi <- function(results_file = ODE_results, eq_threshold = 0.5,eq_var = coef)
 }

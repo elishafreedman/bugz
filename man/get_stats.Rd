@@ -6,10 +6,9 @@
 \usage{
 get_stats(
   results_file = ODE_results,
-  test_parameters = c("sigmaBA = sigmaAB"),
+  test_parameters = c("sigmaBA = sigmaAB", "nuA = nuB"),
   set_baseline = c(K = 200, lambda = 1, mu = 0.5),
-  cor_param_method = c("ld", "pearson"),
-  r0 = TRUE
+  cor_param_method = c("ld", "pearson")
 )
 }
 \arguments{
@@ -20,12 +19,10 @@ additionally, parameters where values are to be matched during analysis can be s
 
 \item{set_baseline}{: vector of parameters to be kept at baseline, if NA, all parameters combinations will be considered.}
 
-\item{cor_param_method}{: methods of correlation calculations, options include ld, or
-any method from the "cor" function in the stats package.}
+\item{cor_param_method}{: methods of correlation calculations, options include ld + Dprime and r2, and or
+any method from the "cor" function in the stats package.if ld is selected Dprime and r2 will be automatically calculated.}
 
 \item{eq_threshold}{: the percent threshold for coefficient of variance to determine the point of stable equilibrium}
-
-\item{eq_var}{: the method for calculating variance through time.   choose from coefficient of variance (coef), percent variance (perVar), or the functions in "cor" function from the stats package.}
 }
 \value{
 A list containing the following: details of the model including the date of
@@ -35,5 +32,5 @@ simulation and parameter combinations, raw results at equilibrium, correlation t
 get_stats
 }
 \examples{
-get_stats(results_file = ODE_results,test_parameters = c("sigmaBA = sigmaAB"),set_baseline = c(K = 200, lambda = 1, mu = 0.5),cor_param_method = c("ld", "pearson"), eq_threshold = 0.5, eq_var = coef,core_spec = 2)
+get_stats(results_file = ODE_results,test_parameters = c("sigmaBA = sigmaAB"),set_baseline = c(K = 200, lambda = 1, mu = 0.5),cor_param_method = c("ld", "pearson"),core_spec = 2)
 }

@@ -10,7 +10,7 @@ int_plot(
   endo_number = 1,
   tmax = 2500,
   host_dem = TRUE,
-  colors = c("red", "orange", "blue")
+  Colors = c("blue", "orange", "red")
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ int_plot(
 
 \item{host_dem}{: if TRUE, host demographics (speciation, and extinction) will be included in the simulation.}
 
-\item{colors}{: a vector  of colors specifying the colour ramp}
+\item{Colors}{:  vector of colours to be included in the graph}
 }
 \value{
 A shiny application line graph of number of hosts with intracellular endosymbionts within the system at each timestep at each parameter combination.
@@ -35,5 +35,4 @@ int_plot
 \examples{
 params <- set_parameters(two_species = TRUE,K = 200,lambda = 1,mu = 0.5,betaA =0.001,betaB = 0.001,sigmaA = 0.1,sigmaB = 0.1,sigmaAB = 1,sigmaBA = seq(0, 1, 0.1),nuA = 0.01,nuB = 0.01)
 int_plot(parameters = params, endo_species = 2, endo_number = 1)
-
 }

@@ -15,7 +15,7 @@
 #' @export
 #'
 #'
-#' @examples get_stats(results_file = ODE_results,test_parameters = c("sigmaBA = sigmaAB"),set_baseline = c(K = 200, lambda = 1, mu = 0.5),cor_param_method = c("ld", "pearson"), eq_threshold = 0.5,core_spec = 2)
+#' @examples get_stats(results_file = ODE_results,test_parameters = c("sigmaBA = sigmaAB"),set_baseline = c(K = 200, lambda = 1, mu = 0.5),cor_param_method = c("ld", "pearson"),core_spec = 2)
 
 
 get_stats <- function(results_file = ODE_results,
@@ -86,23 +86,22 @@ get_stats <- function(results_file = ODE_results,
 
 
   #proportion co-infected
-  if (model_det$endo_species >= 2){
-    coinf <-
-      c(rowSums(eq_raw[, grep("^[^0slnbtKm]*$", colnames(eq_raw))]))
+  #if (model_det$endo_species >= 2){
+    coinf <- c(rowSums(eq_raw[, grep("^[^0slnbtKm]*$", colnames(eq_raw))]))
     #create vector that will be used later on for the pivot longer
     #prop single B
     B <- prop(eq_raw$N01)
     # double B
     #string pattern needed to recognise columns for species B co-infection
-    if (model_det$endo_species >= 2){
+    #if (model_det$endo_species >= 2){
       patB <- rep(NA, model_det$endo_no_per_sp)
       for (i in 2:model_det$endo_no_per_sp){
         patB[i] <- c(paste0("N0", i))
       }
       patB <- na.omit(patB)
       doubleB_prop <- c(prop(rowSums(eq_raw[eq_raw %in% patB])))
-    }
-  }
+    #}
+  #}
   #prop single A
   A <- prop(eq_raw$N10)
 
@@ -124,7 +123,7 @@ get_stats <- function(results_file = ODE_results,
 
   #prop_uninfected
 
-  if (model_det$endo_species >= 2) {
+  #if (model_det$endo_species >= 2) {
     N00 <- c(prop(eq_raw[, "N00"]))
     eq_dat <- cbind(
       eq_raw,
@@ -137,14 +136,14 @@ get_stats <- function(results_file = ODE_results,
         "coinf" = coinf
       )
     )
-  } else{
+  #} else{
     N0 <- c(prop(eq_raw[, "N0"]))
     eq_dat <- cbind(eq_raw, data.frame(
       "N0" = N0,
       "A" = A,
       "A_plus" = doubleA_prop
     ))
-  }
+  #}
 
 
 
@@ -190,7 +189,7 @@ get_stats <- function(results_file = ODE_results,
       #r2
      r <- D^2/A*(1-A)*B*(1-B)
 
-      #phi coefficient
+     #phi coefficient
      ph <- coinf*N0-A-B/sqrt(A+A_plus*B+B_plus*N0)
      c(D, Dp, r, ph)
     }

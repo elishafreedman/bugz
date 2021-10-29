@@ -6,7 +6,6 @@
 \usage{
 set_parameters(
   two_species = TRUE,
-  dems = TRUE,
   K = 200,
   lambda = 1,
   mu = 0.5,
@@ -21,8 +20,6 @@ set_parameters(
 )
 }
 \arguments{
-\item{two_species}{: If TRUE,  parameters for two sets of species will be created.}
-
 \item{K}{: carrying capacity of number of host species within the system.}
 
 \item{lambda}{: host speciation rate}
@@ -44,6 +41,10 @@ set_parameters(
 \item{nuA}{: loss rate of species A}
 
 \item{nuB}{: loss rate of species B}
+
+\item{one_species}{: If TRUE,  parameters for two sets of species will be created.}
+
+\item{dems}{:}
 }
 \value{
 data frame of all parameter combinations
@@ -52,5 +53,5 @@ data frame of all parameter combinations
 set_parameters
 }
 \examples{
-set_parameters(two_species = TRUE,K = 200,lambda = 1,mu = 0.5,betaA = seq(0.0001,0.001, 0.0001),betaB = seq(0.0001, 0.001, 0.0001),sigmaA = seq(0, 1, 0.1),sigmaB = seq(0,1,0.1),sigmaAB = seq(0,1, 0.1),sigmaBA  = seq(0,1,0.1),nuA = 0.01,nuB = 0.01)
+set_parameters(two_species = TRUE, K = 200,lambda = 1,mu = 0.5,betaA = seq(0.0001,0.001, 0.0001),betaB = seq(0.0001, 0.001, 0.0001),sigmaA = seq(0, 1, 0.1),sigmaB = seq(0,1,0.1),sigmaAB = seq(0,1, 0.1),sigmaBA  = seq(0,1,0.1),nuA = 0.01,nuB = 0.01)
 }

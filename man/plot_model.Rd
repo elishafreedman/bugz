@@ -6,16 +6,16 @@
 \usage{
 plot_model(
   results_file = ODE_results,
-  colors = c("royalblue3", "orange", "red"),
-  plot_file = "ODE_Plot.pdf"
+  plot_file = "ODE_Plot.pdf",
+  Colors = c("blue", "orange", "red")
 )
 }
 \arguments{
 \item{results_file}{: results}
 
-\item{colors}{: a vector  of colors specifying the colour ramp}
-
 \item{plot_file}{: file name to save plots}
+
+\item{Colors}{:  vector of colours to be included in the graph}
 }
 \value{
 PDF of plots of results over timesteps
@@ -24,5 +24,5 @@ PDF of plots of results over timesteps
 Plot model
 }
 \examples{
-plot_model(results_file = ODE_results, plot_file = "ODE_Plot.pdf", colours = c("royalblue3","orange", "red"))
+plot_model(results_file = ODE_results, plot_file = "ODE_Plot.pdf", Colors = c("blue","orange", "red"))
 }
