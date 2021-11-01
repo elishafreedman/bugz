@@ -79,7 +79,10 @@ run_model <- function(endo_species = 2,
 
 
   ode_calc <- function(x){
-  list(Parameters = data.frame(t(x)), Results = data.frame(deSolve::ode(ini_state, times, eqn, x)))
+    res <- list(Parameters = data.frame(t(x)),
+                Results = data.frame(deSolve::ode(ini_state, times, eqn, x)))
+    #res$Results[-1, colSums(res$Results !=0)]
+
   }
   if (is.na(core_spec) == TRUE){
     ncore <- parallel::detectCores() / 2
@@ -105,7 +108,7 @@ run_model <- function(endo_species = 2,
 
   #remove 0 rows
 
-  #results  <- lapply(results$simulation, function(results) results$Results[-1, colSums(results$Results!=0)])
+  results  <- lapply(results$simulations, function(x) x$Results[-1, colSums(x$Results!=0)])
 
   return(list(
       simulation_details = sim_details,
