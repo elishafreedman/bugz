@@ -9,33 +9,42 @@
 #' @examples params <- set_parameters(sigmaA = 0.1, sigmaAB = 0.1, sigmaB = 0.1)
 #' ODE_results <- run_model()
 #' equi <- function(results_file = ODE_results, eq_threshold = 0.5,eq_var = coef)
-get_equi_points<- function(results_file = ODE_results, eq_threshold = 0.5,
-                           eq_var = coef){
+get_equi_points<- function(results_file = ODE_results, eq_threshold = 0.1){
+
   model_det <- results_file[["simulation_details"]]
   parameters <- results_file[["param_combos"]]
   all_results <- results_file[["simulations"]]
-  #coefficient of variance
-  coef <- function(X){
-    (sd(X) / mean(X)) * 100
+
+  # #coefficient of variance
+  # coef <- function(X){
+  #   (sd(X) / mean(X)) * 100
+  # }
+  #
+  # #percent of variance
+  #
+  # perVar <- function(X){
+  #  abs((X[2] - X[1])/X[1])
+  # }
+
+  isEqui <- function(x, eq_threshold){
+    x1 <- round(x[1], 2)
+    x2 <- round(x[2], 2)
+    max(abs(x1-x2)/x1, na.rm = TRUE)<eq_threshold
   }
-
-  #percent of variance
-
-  perVar <- function(X){
-   abs((X[2] - X[1])/X[1])
-  }
-
   # finding the time system reaches stable equilibrium  and fill in the raw results
+
+
+
 
   eq_raw <- data.frame()
 
   print(paste("Finding timepoint where stable equilibrium is reached"))
   for(i in 1:length(all_results)){
-    s <- to_test[[i]][["Results"]]
-    p <- to_test[[i]][["Parameters"]]
+    s <- all_results[[i]][["Results"]]
+    p <- all_results[[i]][["Parameters"]]
     for (k in 1:(nrow(s) - 1)){
       eq <- as.matrix(s[k:(k + 1),])
-      VarC <- apply(eq[, -1], 2, FUN = eq_var)
+      VarC <- apply(eq[, -1], 2, FUN = isEqui)
       if (all(VarC <= eq_threshold, na.rm = T)){
         eq_raw[i, ] <- c(p, s[k + 1, ])
         break
