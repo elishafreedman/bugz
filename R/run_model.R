@@ -108,7 +108,7 @@ run_model <- function(endo_species = 2,
 
   #remove 0 rows
 
-  results  <- lapply(results$simulations, function(x) x$Results[-1, colSums(x$Results!=0)])
+  #results  <- lapply(results$simulations, function(x) x$Results[, colSums(x$Results!=0)])
 
   return(list(
       simulation_details = sim_details,

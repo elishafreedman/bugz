@@ -1,4 +1,4 @@
-#' get_equil_points
+#' get_equi_points
 #'
 #' @param results_file : file containing results.
 #' @param eq_threshold : the threshold of variation between each time point at different.
@@ -8,7 +8,7 @@
 #'
 #' @examples params <- set_parameters(sigmaA = 0.1, sigmaAB = 0.1, sigmaB = 0.1)
 #' ODE_results <- run_model()
-#' equi <- function(results_file = ODE_results, eq_threshold = 0.5,eq_var = coef)
+#' equi <- function(results_file = ODE_results, eq_threshold = 0.5)
 get_equi_points<- function(results_file = ODE_results, eq_threshold = 0.1){
 
   model_det <- results_file[["simulation_details"]]
