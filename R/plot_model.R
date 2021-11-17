@@ -48,7 +48,60 @@ plot_model <- function(results_file = ODE_results,
 
       )
     }
-    col <- c(colnames(i$Results[,-1]))
+    #col <- c(colnames(i$Results[,-1]))
+
+    #recreate new ordered columns
+    #species A
+    specA <- rev(seq(1, endo_no_per_sp))
+    colA <- rep(NA, length(specA))
+    for(i in 1:length(specA)){
+      colA[i] <- paste0("N", specA[i], 0)
+    }
+
+    #species B
+    specB <- seq(1, endo_no_per_sp)
+    colB <- rep(NA, length(specB))
+    for(i in 1:length(specB)){
+      colB[i] <- paste0("N", specB[i], 0)
+    }
+
+    #co-infected
+
+    #coiA
+    coiA1 <- rev(seq(1:endo_no_per_sp))
+    coiA2 <- seq(1:endo_no_per_sp)
+    coiA <- c(coiA1, coiA2)
+
+    coiB <- c(coiA2, coiA1)
+
+    coiAll <- rep(seq(1, endo_no_per_sp, 1), endo_no_per_sp*2)
+
+    for(i in 1:length(endo_no_per_sp)){
+    coiAll2 <- rep(1)
+    }
+
+
+
+    coiAll <- rep(NA, length(coiB))
+     for(i in 1:length(coiAll)){
+       coiAll[i] <- paste0("N",coiA[i],coiB[i])
+     }
+
+    #coiB
+    coiB <- rev(coiA)
+
+    coiAllB <- rep(NA, length(coiB))
+
+    for(i in 1:length(coiAllB)){
+      coiAllB[i] <- paste0("N",coiA[i],1)
+    }
+
+
+    #concatonate vectors
+
+    col <- c("N00", specA, coiA, coidub, coiB, specB)
+
+
     initial_plot <- tidyr::pivot_longer(i$Results, all_of(col), names_to = "infection_status")
     initial_plot$infection_status <- factor(initial_plot$infection_status, levels = col)
     print(ggplot(initial_plot)+
