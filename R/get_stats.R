@@ -18,20 +18,23 @@
 #' @examples get_stats(results_file = ODE_results,test_parameters = c("sigmaBA = sigmaAB"),set_baseline = c(K = 200, lambda = 1, mu = 0.5),cor_param_method = c("ld", "pearson"),core_spec = 2)
 
 
-get_stats <- function(results_file = ODE_results,
+get_stats <- function(results_file = ODE_eq,
                       test_parameters = c("sigmaBA = sigmaAB", "nuA = nuB"),
                       set_baseline = c(K = 200, lambda = 1, mu = 0.5),
                       cor_param_method = c("ld", "pearson")){
   #split for ease of indexing
   model_det <- results_file[["simulation_details"]]
-  parameters <- results_file[["param_combos"]]
-  all_results <- results_file[["simulations"]]
+  parameters <- results_file[["parameters"]]
+  all_results <- results_file[["equilibrium"]]
 
 
   #subset  the baseline parameters
   if (length(set_baseline >= 1) && is.na(set_baseline) == FALSE){
-    to_testB <- lapply(all_results, function(x) x[all(set_baseline %in% x$Parameters)])
-    to_testB <- to_testB[lapply(to_testB, length) > 0]
+    params <- data.frame(parameters[,set_baseline])
+    to_testB <- all_results[all_results %in% params]
+
+    #o_testB <- lapply(all_results, function(x) x[all(set_baseline %in% x$Parameters)])
+    #to_testB <- to_testB[lapply(to_testB, length) > 0]
   } else{
     to_testB <- all_results
   }
@@ -42,7 +45,8 @@ get_stats <- function(results_file = ODE_results,
     #if(model_det$endo_species >= 2){
     #subset the matched parameters from the test_parameters arguments
     #create vector to  match
-    dplyr::case_when(test_parameters == "sigmaAB = sigmaBA" ~ "sigmaAB",
+    dplyr::case_when(
+      test_parameters == "sigmaAB = sigmaBA" ~ "sigmaAB",
       test_parameters == "sigmaBA = sigmaAB" ~ "sigmaAB",
       test_parameters == "sigmaA = sigmaB" ~ "sigmaA",
       test_parameters == "sigmaB = sigmaA" ~ "sigmaA",
@@ -51,10 +55,13 @@ get_stats <- function(results_file = ODE_results,
       test_parameters == "nuA = nuB" ~ "nuA",
       test_parameters == "nuB = nuA" ~ "nuA")
     #print(test_parameters)
-    to_test <- lapply(to_testB, function(x)
-        x[unique(x$Parameters[, test_parameters]) %in% x$Parameters])
-    to_test <- to_test[lapply(to_test, length) > 0]
-   } else{
+
+    #subset the parameters table and then subset the results
+
+    params1 <- unique(data.frame(parameters[,test_parameters]))
+    to_test <- to_testB[to_testB %in% params1]
+    #to_test <- to_test[lapply(to_test, length) > 0]
+   }else{
      to_test <- to_testB
    }
   if (length(to_test) == 0){
@@ -71,11 +78,11 @@ get_stats <- function(results_file = ODE_results,
                         colnames(to_test[[1]]$Results))
 
   #fill in parameters and and  infection status
-  if (model_det$endo_species >= 2){
+  #if (model_det$endo_species >= 2){
     eq_infect <- c("N00", "A", "B", "A_plus", "B_plus", "coinf")
-  } else{
-    eq_infect <- c("N0", "A", "A_plus")
-  }
+  #} else{
+    #eq_infect <- c("N0", "A", "A_plus")
+  #}
 
 
 
@@ -137,12 +144,12 @@ get_stats <- function(results_file = ODE_results,
       )
     )
   #} else{
-    N0 <- c(prop(eq_raw[, "N0"]))
-    eq_dat <- cbind(eq_raw, data.frame(
-      "N0" = N0,
-      "A" = A,
-      "A_plus" = doubleA_prop
-    ))
+    # N0 <- c(prop(eq_raw[, "N0"]))
+    # eq_dat <- cbind(eq_raw, data.frame(
+    #   "N0" = N0,
+    #   "A" = A,
+    #   "A_plus" = doubleA_prop
+    # ))
   #}
 
 
