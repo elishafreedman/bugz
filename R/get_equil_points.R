@@ -11,10 +11,9 @@
 #' equi <- function(results_file = ODE_results, eq_threshold = 0.5)
 get_equi_points<- function(results_file = ODE_results, eq_threshold = 0.1){
 
-  model_det <- results_file[["simulation_details"]]
-  parameters <- results_file[["param_combos"]]
-  all_results <- results_file[["simulations"]]
-
+  model_det <- results_file$simulation_details
+  parameters <- results_file$param_combos
+  all_results <- results_file$simulations
   # #coefficient of variance
   # coef <- function(X){
   #   (sd(X) / mean(X)) * 100
@@ -36,10 +35,18 @@ get_equi_points<- function(results_file = ODE_results, eq_threshold = 0.1){
 
 
 
-  eq_raw <- data.frame(matrix(nrow = nrow(parameters), ncol = nrow(parameters)+nrow(all_results[[1]][["Results"]])))
-   colnames(eq_raw) <- c(colnames(parameters), colnames(all_results[[1]][["Results"]]))
+  eq_raw <- data.frame(matrix(nrow = nrow(parameters),
+                              ncol = ncol(parameters)+ncol(all_results[[1]][["Results"]])))
+
+  colnames(eq_raw) <- c(colnames(parameters), colnames(all_results[[1]][["Results"]]))
 
   print(paste("Finding timepoint where stable equilibrium is reached"))
+  pb <- txtProgressBar(min = 0,      # Minimum value of the progress bar
+                       max = length(all_results), # Maximum value of the progress bar
+                       style = 3,    # Progress bar style (also available style = 1 and style = 2)
+                       width = 50,   # Progress bar width. Defaults to getOption("width")
+                       char = "=")
+
   for(i in 1:length(all_results)){
     s <- all_results[[i]][["Results"]]
     p <- all_results[[i]][["Parameters"]]
@@ -52,8 +59,10 @@ get_equi_points<- function(results_file = ODE_results, eq_threshold = 0.1){
         break
       }
     }
-    print(paste("search for equilbrium at combination", i, "done"))
+    setTxtProgressBar(pb, i)
   }
+  close(pb)
+
     if (all(is.na(eq_raw))){
       warning(
         "system did not reach a stable equilbrium at maximum timestep
@@ -67,7 +76,7 @@ get_equi_points<- function(results_file = ODE_results, eq_threshold = 0.1){
     return(list(
       model_det = model_det,
       parameters = parameters,
-      Equilbrium = eq_raw
+      equilibrium = eq_raw
       )
     )
   }

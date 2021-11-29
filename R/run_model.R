@@ -39,7 +39,7 @@ run_model <- function(endo_number = 2,
 
   sim_details <- list(
     simulation_ran = Sys.time(),
-    endo_species = endo_species,
+    #endo_species = endo_species,
     endo_no_per_sp = endo_number,
     max_timesteps = tmax
   )
