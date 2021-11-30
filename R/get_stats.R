@@ -26,11 +26,10 @@ get_stats <- function(results_file = ODE_eq,
   model_det <- results_file[["simulation_details"]]
   parameters <- results_file[["parameters"]]
   all_results <- results_file[["equilibrium"]]
-print(class(parameters))
-print(class(all_results))
+
   #subset  the baseline parameters
   if (length(set_baseline >= 1) && is.na(set_baseline) == FALSE){
-    params <- parameters %>% filter(parameters[, names(set_baseline)] == set_baseline)
+    params <- parameters[parameters %in% set_baseline]
     to_testB <- all_results[all_results %in% params]
   } else{
     to_testB <- all_results
@@ -42,7 +41,7 @@ print(class(all_results))
     #if(model_det$endo_species >= 2){
     #subset the matched parameters from the test_parameters arguments
     #create vector to  match
-    test_p <- dplyr::case_when(
+    dplyr::case_when(
       test_parameters == "sigmaAB = sigmaBA" ~ "sigmaAB",
       test_parameters == "sigmaBA = sigmaAB" ~ "sigmaAB",
       test_parameters == "sigmaA = sigmaB" ~ "sigmaA",
@@ -51,11 +50,10 @@ print(class(all_results))
       test_parameters == "betaA = betaB" ~ "betaA",
       test_parameters == "nuA = nuB" ~ "nuA",
       test_parameters == "nuB = nuA" ~ "nuA")
-    print(test_p)
     #subset the parameters table and then subset the results
-    params1 <- params %>% filter(params[, names(test_p)] == test_p)
-    to_test <- to_testB[to_testB %in% test_p]
-    #to_test <- to_test[lapply(to_test, length) > 0]
+
+     params1 <- params[params %in% test_parameters]
+     to_test <- to_testB[to_testB %in% params1]
    }else{
      to_test <- to_testB
    }

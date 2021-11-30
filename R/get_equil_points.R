@@ -72,9 +72,10 @@ get_equi_points<- function(results_file = ODE_results, eq_threshold = 0.1){
       )
     }
 
+  eq_thr <- c("eq_threshold" = eq_threshold)
   #prep file for saving
     return(list(
-      model_det = model_det,
+      model_det = c(model_det,eq_thr),
       parameters = parameters,
       equilibrium = eq_raw
       )
