@@ -12,29 +12,29 @@
 #' @import ggplot2
 #' @examples params <- set_parameters(two_species = TRUE,K = 200,lambda = 1,mu = 0.5,betaA =0.001,betaB = 0.001,sigmaA = 0.1,sigmaB = 0.1,sigmaAB = 1,sigmaBA = seq(0, 1, 0.1),nuA = 0.01,nuB = 0.01)
 #' int_plot(parameters = params, endo_species = 2, endo_number = 1)
-int_plot <-function(parameters = params, endo_species = 2, endo_number = 1, tmax = 2500, host_dem = TRUE, Colors = c("blue","orange", "red")){
-  eqn <- build_equations(endo_s = endo_species, endo_no = endo_number, host = host_dem)
+int_plot <-function(parameters = params, endo_species = 2, endo_number = 1, tmax = 2500, Colors = c("blue","orange", "red")){
+  eqn <- build_equations(endo_no = endo_number)
   ins <- eqn[["states"]]
   eqn_s <- eqn[["equations"]]
   times <- seq(0,tmax, 1)
   mins <- head(parameters, 1)
   maxs <- tail(parameters, 1)
 
-  # create initial states vector #
-  if(host_dem == TRUE){
-    ini_state <- c(rep(0, length(ins)))
-    names(ini_state) <- c(ins)
-    ini_state <- dplyr::case_when(
-      names(ini_state) == "N0"~ parameters$K[1] * parameters$mu[1],
-      names(ini_state) == "N00"~parameters$K[1] * parameters$mu[1],
-      names(ini_state) == "N1"~1,
-      names(ini_state) == "N01"~1,
-      names(ini_state) == "N10"~1
-    )
-
-    ini_state[is.na(ini_state)] <-  0
-    names(ini_state) <- c(ins)
-  }else{
+  # # create initial states vector #
+  # if(host_dem == TRUE){
+  #   ini_state <- c(rep(0, length(ins)))
+  #   names(ini_state) <- c(ins)
+  #   ini_state <- dplyr::case_when(
+  #     names(ini_state) == "N0"~ parameters$K[1] * parameters$mu[1],
+  #     names(ini_state) == "N00"~parameters$K[1] * parameters$mu[1],
+  #     names(ini_state) == "N1"~1,
+  #     names(ini_state) == "N01"~1,
+  #     names(ini_state) == "N10"~1
+  #   )
+  #
+  #   ini_state[is.na(ini_state)] <-  0
+  #   names(ini_state) <- c(ins)
+  # }else{
     ini_state <- c(rep(0, length(ins)))
     names(ini_state) <- c(ins)
     ini_state <- dplyr::case_when(
@@ -46,7 +46,7 @@ int_plot <-function(parameters = params, endo_species = 2, endo_number = 1, tmax
     )
     ini_state[is.na(ini_state)] <-  0
     names(ini_state) <- c(ins)
-  }
+  #}
 
 
   ini_state[is.na(ini_state)] <-  0
