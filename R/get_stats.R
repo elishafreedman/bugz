@@ -213,7 +213,7 @@ get_stats <- function(results_file = ODE_eq,
       if (any(cor_param_method == "ld")){
         corT <- cor_param_method[grep("^[^ld]", cor_param_method)]
         eq_param_cor <-eq_av_prop |> dplyr::group_by(parameter, infection_status) |> dplyr::summarise(cor = cor(value, proportion, method = corT))
-        eq_ld <- data.frame("ld" = NA, "Dprime", "r2", "phi_coef")
+        eq_ld <- data.frame("ld" = NA, "Dprime" = NA, "r2" = NA, "phi_coef" = NA)
         cols <- c(colnames(parameters))
         eq_p <-data.frame(matrix(ncol = length(parameters)))
         colnames(eq_p) <- cols
