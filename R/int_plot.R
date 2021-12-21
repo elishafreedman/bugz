@@ -32,8 +32,8 @@ int_plot <-function(parameters = params,
     ini_state <- c(rep(0, length(ins)))
     names(ini_state) <- c(ins)
     ini_state <- dplyr::case_when(
-      names(ini_state) == "N0"~parameters$K[1]*parameters$mu[1],
-      names(ini_state) == "N00"~parameters$K[1]*parameters$mu[1],
+      names(ini_state) == "N0"~kmax,
+      names(ini_state) == "N00"~kmax,
       names(ini_state) == "N1"~ 1,
       names(ini_state) == "N01"~1,
       names(ini_state) == "N10"~1
