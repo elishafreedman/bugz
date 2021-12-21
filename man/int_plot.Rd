@@ -9,7 +9,6 @@ int_plot(
   endo_species = 2,
   endo_number = 1,
   tmax = 2500,
-  host_dem = TRUE,
   Colors = c("blue", "orange", "red")
 )
 }
@@ -22,9 +21,9 @@ int_plot(
 
 \item{tmax}{: max number of timesteps}
 
-\item{host_dem}{: if TRUE, host demographics (speciation, and extinction) will be included in the simulation.}
-
 \item{Colors}{:  vector of colours to be included in the graph}
+
+\item{host_dem}{: if TRUE, host demographics (speciation, and extinction) will be included in the simulation.}
 }
 \value{
 A shiny application line graph of number of hosts with intracellular endosymbionts within the system at each timestep at each parameter combination.

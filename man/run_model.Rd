@@ -5,17 +5,14 @@
 \title{run_model}
 \usage{
 run_model(
-  endo_species = 2,
   endo_number = 2,
   parameters = params,
   tmax = 1000,
   core_spec = NA,
-  host_dem = TRUE
+  kmax = NA
 )
 }
 \arguments{
-\item{endo_species}{: number of endosymbiont species within the system}
-
 \item{endo_number}{: number of endosymbionts per species within the system}
 
 \item{parameters}{: a data frame containing all parameter combinations to run the model on}
@@ -23,6 +20,8 @@ run_model(
 \item{tmax}{: The maximum number of time steps}
 
 \item{core_spec}{: If the number of parameter combinations is large it may be wise to assign multiple cores for speed. if NA, number of cores used in process will be set at half the number of cores available for use on the computer.}
+
+\item{endo_species}{: number of endosymbiont species within the system}
 }
 \value{
 list containing the details of the model,
@@ -34,5 +33,5 @@ run_model
 }
 \examples{
 params <- set_parameters(two_species = TRUE,K = 200,lambda = 1,mu = 0.5,betaA =0.001,betaB = 0.001,sigmaA = 0.1,sigmaB = 0.1,sigmaAB = 1,sigmaBA = seq(0, 1, 0.1),nuA = 0.01,nuB = 0.01)
-run_model(endo_species = 2,endo_number = 2,parameters = params,tmax = 1000,core_spec = NA)
+run_model(endo_species = 2,endo_number = 2,parameters = params,tmax = 1000,core_spec = NA, outfile = "ODE_results.rda")
 }

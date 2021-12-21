@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_equil_points.R
 \name{get_equi_points}
 \alias{get_equi_points}
-\title{get_equil_points}
+\title{get_equi_points}
 \usage{
 get_equi_points(results_file = ODE_results, eq_threshold = 0.1)
 }
@@ -17,10 +17,10 @@ get_equi_points(results_file = ODE_results, eq_threshold = 0.1)
 
 }
 \description{
-get_equil_points
+get_equi_points
 }
 \examples{
 params <- set_parameters(sigmaA = 0.1, sigmaAB = 0.1, sigmaB = 0.1)
 ODE_results <- run_model()
-equi <- function(results_file = ODE_results, eq_threshold = 0.5,eq_var = coef)
+equi <- function(results_file = ODE_results, eq_threshold = 0.5)
 }

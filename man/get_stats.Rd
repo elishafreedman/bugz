@@ -5,8 +5,8 @@
 \title{get_stats}
 \usage{
 get_stats(
-  results_file = ODE_results,
-  test_parameters = c("sigmaBA = sigmaAB", "nuA = nuB"),
+  results_file = ODE_eq,
+  test_parameters = c("sigmaBA" == "sigmaAB", "nuA" == "nuB"),
   set_baseline = c(K = 200, lambda = 1, mu = 0.5),
   cor_param_method = c("ld", "pearson")
 )
@@ -15,7 +15,7 @@ get_stats(
 \item{results_file}{: name of file where raw results have been stored. This file must be uploaded to the environment}
 
 \item{test_parameters}{: vector of parameters tested.  if NA, all parameters will be tested apart from designated baseline.
-additionally, parameters where values are to be matched during analysis can be specified with "etc == etc". Parameters that are able to do defined in this way are: nu, sigma, and beta.}
+additionally, parameters where values are to be matched during analysis can be specified with "etc == etc". parameters that are able to do defined in this way are: nu, sigma, and beta.}
 
 \item{set_baseline}{: vector of parameters to be kept at baseline, if NA, all parameters combinations will be considered.}
 

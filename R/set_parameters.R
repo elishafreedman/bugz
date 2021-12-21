@@ -17,10 +17,9 @@
 #' @return data frame of all parameter combinations
 #' @export
 #'
-#' @examples set_parameters(two_species = TRUE, K = 200,lambda = 1,mu = 0.5,betaA = seq(0.0001,0.001, 0.0001),betaB = seq(0.0001, 0.001, 0.0001),sigmaA = seq(0, 1, 0.1),sigmaB = seq(0,1,0.1),sigmaAB = seq(0,1, 0.1),sigmaBA  = seq(0,1,0.1),nuA = 0.01,nuB = 0.01)
+#' @examples set_parameters(K = 200,lambda = 1,mu = 0.5,betaA = seq(0.0001,0.001, 0.0001),betaB = 0.001,sigmaA = 1,sigmaB = 1,sigmaAB =  0.1,sigmaBA  = 0.1,nuA = 0.01,nuB = 0.01)
 
-set_parameters <- function(two_species = TRUE,
-                           K = 200,
+set_parameters <- function(K = 200,
                            lambda = 1,
                            mu = 0.5,
                            betaA = seq(0.0001,0.001, 0.0001),
@@ -35,17 +34,7 @@ set_parameters <- function(two_species = TRUE,
 
   #creating the parameter list
 
-  if(two_species == FALSE){
-    sigmaB_range = 0
-    nuB = 0
-    beta_Brange = 0
-    expand.grid(K= K,
-                lambda = lambda,
-                mu = mu,
-                betaA= betaA,
-                sigmaA= sigmaA,
-                nuA = nuA)
-    }else{
+
     expand.grid(K= K,
                 lambda = lambda,
                 mu = mu,
@@ -59,5 +48,5 @@ set_parameters <- function(two_species = TRUE,
                 nuB = nuB)
 
    }
-}
+
 

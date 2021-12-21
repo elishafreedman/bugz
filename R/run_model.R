@@ -20,7 +20,8 @@
 run_model <- function(endo_number = 2,
                       parameters = params,
                       tmax = 1000,
-                      core_spec = NA) {
+                      core_spec = NA,
+                      kmax = NA) {
   #Build the equations
 
   ODE <- build_equations(endo_no = endo_number)
@@ -47,13 +48,16 @@ run_model <- function(endo_number = 2,
   times <- seq(0, tmax, 1)
   results <- list()
 
+  if(is.na(kmax)){
+    kmax <- parameters$K[1]*parameters$mu[1]
+  }
+
   # create initial states vector #
 
   ini_state <- c(rep(0, length(ins)))
   names(ini_state) <- c(ins)
   ini_state <- dplyr::case_when(
-    names(ini_state) == "N0"  ~  parameters$K[1] * parameters$mu[1],
-    names(ini_state) == "N00" ~  parameters$K[1] * parameters$mu[1],
+    names(ini_state) == "N00" ~  kmax,
     names(ini_state) == "N1"   ~  1,
     names(ini_state) == "N01"  ~  1,
     names(ini_state) == "N10"  ~ 1
@@ -61,7 +65,7 @@ run_model <- function(endo_number = 2,
 
   ini_state[is.na(ini_state)] <-  0
   names(ini_state) <- c(ins)
-
+ print(ini_state)
 
   print(paste("simulation start time", Sys.time()))
 
