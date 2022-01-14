@@ -14,16 +14,6 @@ get_equi_points<- function(results_file = ODE_results, eq_threshold = 0.1){
   model_det <- results_file$simulation_details
   parameters <- results_file$param_combos
   all_results <- results_file$simulations
-  # #coefficient of variance
-  # coef <- function(X){
-  #   (sd(X) / mean(X)) * 100
-  # }
-  #
-  # #percent of variance
-  #
-  # perVar <- function(X){
-  #  abs('(X[2] - X[1])/X[1])
-  # }
 
   isEqui <- function(x, eq_thresh = eq_threshold){
     x1 <- round(x[1], 2)

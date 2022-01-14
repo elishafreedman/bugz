@@ -22,6 +22,7 @@ get_stats <- function(results_file = ODE_eq,
                       test_parameters = c("sigmaBA" == "sigmaAB", "nuA" == "nuB"),
                       set_baseline = c(K = 200, lambda = 1, mu = 0.5),
                       cor_param_method = c("ld", "pearson")){
+
   #split for ease of indexing
   model_det <- results_file[["model_det"]]
   parameters <- results_file[["parameters"]]
@@ -31,77 +32,43 @@ get_stats <- function(results_file = ODE_eq,
 
 
   if (length(set_baseline >= 1) && is.na(set_baseline) == FALSE){
-    for(i in 1:length(set_baseline)){
-      subset(parameters, parameters %in% set_baseline[i])
-      subset(to_test, to_test %in% set_baseline[i])
-      print(paste(i, "baseline finished"))
-    }
-  }
-  else{
-    to_test <- all_results
-    print("Baseline subsetted")
-  }
+
+     subset(parameters, parameters %in% set_baseline)
+     subset(to_test, to_test %in% set_baseline)
+   }
 
   if (length(to_test) == 0){
     warning("Baseline values for parameters you would like to test were not simulated!")
     #isolating parameter combinations of interest from the dataset
   }
   if(length(test_parameters) >= 1 && is.na(test_parameters) == FALSE){
-    for(i in 1:length(test_parameters)){
-      subset(parameters, parameters %in% test_parameters[i])
-      subset(to_test, to_test %in% test_parameters[i])
-      print(paste(i, "parameters finished"))
-    }
+
+    subset(parameters, parameters %in% test_parameters[i])
+    subset(to_test, to_test %in% test_parameters[i])
 
   }else{
     to_test <- to_test
   }
-  # return(params)
-  # return(to_test)
+
   print("test parameters subsetted")
 
   if (length(to_test) == 0){
     warning("Parameter combinations you would like to test were not simulated!")
   }
 
-  # stats at equilibrium #
-
-  # raw results for each parameter at equilibrium
-  # colength <- rep(NA, ncol(to_test) + ncol(parameters))
-  # to_test <- as.data.frame(matrix(NA, nrow = length(to_test),
-  #                                ncol = length(colength)))
-  # colnames(to_test) <- c(colnames(parameters),
-  #                       colnames(to_test))
-
-  #fill in parameters and and  infection status
-  #if (model_det$endo_species >= 2){
   eq_infect <- c("N00", "A", "B", "A_plus", "B_plus", "coinf")
-  #} else{
-  #eq_infect <- c("N0", "A", "A_plus")
-  #}
 
+  #proportion of all coinfected
 
+  coinf <- c(rowSums(to_test[, grep("^[^0slnbtKm]*$", colnames(to_test))]))
 
-  # function to calculate the proportion at equilibrium
-
-
-
-  #proportion co-infected
-  #if (model_det$endo_species >= 2){
-
-
-
-
-    prop <- function(x){
-      x / (x$K * x$mu)
-    }
-    coinf <- c(rowSums(to_test[, grep("^[^0slnbtKm]*$", colnames(to_test))]))
-    #create vector that will be used later on for the pivot longer
-    #prop single B
+  #prop single B
     B <- apply(to_test,1, function(x)  x["N01"] / (x["K"] * x["mu"]))
-    # double B
-    #string pattern needed to recognise columns for species B co-infection
-    #if (model_det$endo_species >= 2){
+
+  # double B
+
+  #string pattern needed to recognise columns for species B co-infection
+
     patB <- rep(NA, model_det$endo_no_per_sp)
     for (i in 2:model_det$endo_no_per_sp){
       patB[i] <- c(paste0("N0", i))
@@ -110,21 +77,17 @@ get_stats <- function(results_file = ODE_eq,
     dubB <- rowSums(to_test[to_test %in% patB])
     dubBparam <- cbind(parameters, dubB)
     B_plus <- apply(dubBparam, 1, function(x) x["dubB"] / (x["K"] * x["mu"]))
-    #prop single A
+
+
+     #prop single A
     A <- apply(to_test,1, function(x)  x["N10"] / (x["K"] * x["mu"]))
 
     # single species co-infections
 
     #string pattern needed to recognise columns for species A co-infections
     patA <- rep(NA, model_det$endo_no_per_sp)
-    # if (model_det$endo_species >= 2) {
-    #   for (i in 2:model_det$endo_no_per_sp) {
-    #     patA[i] <- c(paste0("N", i, "0"))
-    #   }
-    # } else{
     for (i in 2:model_det$endo_no_per_sp)
       patA[i] <- c(paste0("N", i))
-    #}
     patA <- na.omit(patA)
     dubA <- rowSums(to_test[to_test %in% patA])
     dubAparam <- cbind(parameters, dubA)
@@ -132,8 +95,8 @@ get_stats <- function(results_file = ODE_eq,
 
     #prop_uninfected
 
-    #if (model_det$endo_species >= 2){
     N00 <- apply(to_test, 1, function(x)  x["N00"] / (x["K"] * x["mu"]))
+
     eq_dat <- cbind(
       parameters,
       N00,
@@ -143,20 +106,15 @@ get_stats <- function(results_file = ODE_eq,
       B_plus,
       coinf
     )
- print(eq_dat)
+print(eq_dat)
 
  # change test parameters so it's subsetable
 
-
-    #if (all(is.na(test_parameters)) == TRUE){
       par <- colnames(parameters)
       eq_met <-tidyr::pivot_longer(eq_dat, all_of(par), names_to = "parameter")
 
-    # } else{
-    #   eq_met <-tidyr::pivot_longer(eq_dat, all_of(test_parameters), names_to = "parameter")
-    # }
     eq_met <- tidyr::pivot_longer(eq_met,
-                                  eq_infect,
+                                  all_of(eq_infect),
                                   names_to = "infection_status",
                                   values_to = "proportion")
 
@@ -194,6 +152,7 @@ get_stats <- function(results_file = ODE_eq,
 
       #phi coefficient
       ph <- coinf*N0-A-B/sqrt(A+A_plus*B+B_plus*N0)
+
       c(D, Dp, r, ph)
     }
 
@@ -217,9 +176,8 @@ get_stats <- function(results_file = ODE_eq,
         cols <- c(colnames(parameters))
         eq_p <-data.frame(matrix(ncol = length(parameters)))
         colnames(eq_p) <- cols
-        for (i in 1:length(to_test)) {
-          eq_p[i, ] <- parameters
-          #if (model_det$endo_species >= 2) {
+        for (i in 1:length(to_test)){
+          eq_p[i, ] <- parameters[i,]
             eq_ld[i, ] <- ld(
               coinf = eq_dat$coinf[i],
               N0 = eq_dat$N00[i],
@@ -228,30 +186,19 @@ get_stats <- function(results_file = ODE_eq,
               A_plus = eq_dat$A_plus[i],
               B_plus = eq_dat$B_plus[i]
             )
-
-          # } else{
-          #   eq_ld[i, ]<- ld(
-          #     coinf = eq_dat$coinf[i],
-          #     N0 = eq_dat$N0[i],
-          #     A = eq_dat$A[i],
-          #     B = eq_dat$B[i],
-          #     A_plus = eq_dat$A_plus[i],
-          #     B_plus = eq_dat$B_plus[i]
-          #   )
-          }
         }
         eq_ld <- cbind(eq_p, eq_ld)
-      } else{
-        eq_param_cor <- eq_av_prop |> dplyr::group_by(parameter, infection_status) |> dplyr::summarise(cor = cor(value, proportion, method = cor_param_method))
-      }
+      }else{
+      eq_param_cor <- eq_av_prop |> dplyr::group_by(parameter, infection_status) |> dplyr::summarise(cor = cor(value, proportion, method = cor_param_method))
+    }
 
       #prep file for saving
-      if (any(cor_param_method == "ld")) {
+      if (any(cor_param_method == "ld")){
         return(list(
           model_det = model_det,
           "equilibrum_stats" = list(
             "Results" = to_test,
-            "Proportion" = eq_av_prop ,
+            "Proportion" = eq_dat,
             "correlations" = eq_param_cor,
             "ld" = eq_ld
           )
@@ -261,10 +208,10 @@ get_stats <- function(results_file = ODE_eq,
           "model_det" = model_det,
           "equilibrum_stats" = list(
             "Results" = to_test,
-            "Proportion" = eq_av_prop ,
+            "Proportion" = eq_dat ,
             "correlation" = eq_param_cor
           )
         ))
       }
     }
-
+}
