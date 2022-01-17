@@ -97,7 +97,7 @@ plot_model <- function(results_file = ODE_results,
     }
 
 
-    #concatonate vectors
+    #concatenate vectors
 
     col <- c("N00", specA, coiA, coidub, coiB, specB)
 

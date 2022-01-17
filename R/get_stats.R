@@ -70,11 +70,14 @@ get_stats <- function(results_file = ODE_eq,
   #string pattern needed to recognise columns for species B co-infection
 
     patB <- rep(NA, model_det$endo_no_per_sp)
+
     for (i in 2:model_det$endo_no_per_sp){
       patB[i] <- c(paste0("N0", i))
     }
+
     patB <- na.omit(patB)
-    dubB <- rowSums(to_test[to_test %in% patB])
+    dubB <- to_test |> dplyr::select(patB)
+    dubB <- rowSums(dubB)
     dubBparam <- cbind(parameters, dubB)
     B_plus <- apply(dubBparam, 1, function(x) x["dubB"] / (x["K"] * x["mu"]))
 
@@ -86,10 +89,14 @@ get_stats <- function(results_file = ODE_eq,
 
     #string pattern needed to recognise columns for species A co-infections
     patA <- rep(NA, model_det$endo_no_per_sp)
-    for (i in 2:model_det$endo_no_per_sp)
-      patA[i] <- c(paste0("N", i))
+
+    for (i in 2:model_det$endo_no_per_sp){
+    patA[i] <- c(paste0("N", i, "0"))
+    }
+
     patA <- na.omit(patA)
-    dubA <- rowSums(to_test[to_test %in% patA])
+    dubA <- to_test |> dplyr::select(patA)
+    dubA <- rowSums(dubA)
     dubAparam <- cbind(parameters, dubA)
     A_plus <- apply(dubAparam, 1, function(x) x["dubA"] / (x["K"] * x["mu"]))
 
@@ -106,7 +113,7 @@ get_stats <- function(results_file = ODE_eq,
       B_plus,
       coinf
     )
-print(eq_dat)
+
 
  # change test parameters so it's subsetable
 
