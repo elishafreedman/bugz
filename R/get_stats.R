@@ -43,8 +43,8 @@ get_stats <- function(results_file = ODE_eq,
   }
   if(length(test_parameters) >= 1 && is.na(test_parameters) == FALSE){
 
-    subset(parameters, parameters %in% test_parameters[i])
-    subset(to_test, to_test %in% test_parameters[i])
+    subset(parameters, parameters %in% test_parameters)
+    subset(to_test, to_test %in% test_parameters)
 
   }else{
     to_test <- to_test
@@ -114,7 +114,6 @@ get_stats <- function(results_file = ODE_eq,
       coinf
     )
 
-
  # change test parameters so it's subsetable
 
       par <- colnames(parameters)
@@ -169,7 +168,6 @@ get_stats <- function(results_file = ODE_eq,
     eq_av_prop$parameter <- factor(eq_av_prop$parameter)
     eq_av_prop$infection_status <- factor(eq_av_prop$infection_status)
 
-
     print(paste("Calculating correlations at equilibrium"))
 
     #calculate correlation coefficients.
@@ -183,7 +181,7 @@ get_stats <- function(results_file = ODE_eq,
         cols <- c(colnames(parameters))
         eq_p <-data.frame(matrix(ncol = length(parameters)))
         colnames(eq_p) <- cols
-        for (i in 1:length(to_test)){
+        for (i in 1:nrow(to_test)){
           eq_p[i, ] <- parameters[i,]
             eq_ld[i, ] <- ld(
               coinf = eq_dat$coinf[i],
