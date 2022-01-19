@@ -144,15 +144,15 @@ get_stats <- function(results_file = ODE_eq,
 
       #D prime
 
-      if(D >= 0){
+      if(D > 0){
         Dmax <- min(sum(A, A_plus) * (1-sum(B, B_plus)),
-                    (1- sum(A, A_plus)) * (1-sum(B, B_plus)))
+                    (1- sum(A, A_plus)) * sum(B, B_plus))
         Dp <- D/Dmax
-      }
-      if(D < 0){
-        Dmax <-  max(-sum(A, A_plus) * sum(B, B_plus),
+
+      }else if (D < 0){
+        Dmin <-  max(-(sum(A, A_plus) * sum(B, B_plus)),
                      -(1-sum(A, A_plus)) * (1-sum(B, B_plus)))
-        Dp <- D/Dmax
+        Dp <- D/Dmin
       }
 
       #r2
@@ -160,14 +160,13 @@ get_stats <- function(results_file = ODE_eq,
         sum(B, B_plus) * (1-sum(B, B_plus))
 
       #phi coefficient
-      ph <- coinf*N0-sum(A, A_plus) * sum(B, B_plus)/sqrt(sum(coinf, sum(B, B_plus))*
+      ph <- coinf*N0-sum(A, A_plus) * sum(B, B_plus)/sqrt(sum(coinf, sum(A, A_plus))*
                                                           sum(sum(B, B_plus), N0)*
-                                                          sum(sum(B, B_plus), N0)*
+                                                          sum(sum(A, A_plus), N0)*
                                                           sum(coinf, sum(B, B_plus)))
 
       c(D, Dp, r, ph)
-    }
-
+}
 
     #add levels to dataset
 
