@@ -138,26 +138,32 @@ get_stats <- function(results_file = ODE_eq,
                    N0,
                    A,
                    B,
-                   A_plus = 0,
-                   B_plus = 0){
+                   A_plus,
+                   B_plus){
       D <-coinf * N0 - sum(A, A_plus) * sum(B, B_plus)
 
       #D prime
 
       if(D >= 0){
-        Dmax <- min(A*B, -(1-A)*(1-B))
+        Dmax <- min(sum(A, A_plus) * (1-sum(B, B_plus)),
+                    (1- sum(A, A_plus)) * (1-sum(B, B_plus)))
         Dp <- D/Dmax
       }
       if(D < 0){
-        Dmin <- min(A*(1-B), B*(1-A)*B)
-        Dp <- D/Dmin
+        Dmax <-  max(-sum(A, A_plus) * sum(B, B_plus),
+                     -(1-sum(A, A_plus)) * (1-sum(B, B_plus)))
+        Dp <- D/Dmax
       }
 
       #r2
-      r <- D^2/A*(1-A)*B*(1-B)
+      r <- D^2/sum(A, A_plus)*(1-sum(A, A_plus)) *
+        sum(B, B_plus) * (1-sum(B, B_plus))
 
       #phi coefficient
-      ph <- coinf*N0-A-B/sqrt(A+A_plus*B+B_plus*N0)
+      ph <- coinf*N0-sum(A, A_plus) * sum(B, B_plus)/sqrt(sum(coinf, sum(B, B_plus))*
+                                                          sum(sum(B, B_plus), N0)*
+                                                          sum(sum(B, B_plus), N0)*
+                                                          sum(coinf, sum(B, B_plus)))
 
       c(D, Dp, r, ph)
     }

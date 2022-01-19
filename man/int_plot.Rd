@@ -9,6 +9,7 @@ int_plot(
   endo_species = 2,
   endo_number = 1,
   tmax = 2500,
+  kmax = NA,
   Colors = c("blue", "orange", "red")
 )
 }
