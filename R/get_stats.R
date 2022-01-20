@@ -145,14 +145,14 @@ get_stats <- function(results_file = ODE_eq,
       #D prime
 
       if(D > 0){
-        Dmax <- min(sum(A, A_plus) * (1-sum(B, B_plus)),
-                    (1- sum(A, A_plus)) * sum(B, B_plus))
-        Dp <- D/Dmax
-
-      }else if (D < 0){
-        Dmin <-  max(-(sum(A, A_plus) * sum(B, B_plus)),
-                     -(1-sum(A, A_plus)) * (1-sum(B, B_plus)))
+        Dmin <- min(sum(A, A_plus,coinf) * (1-sum(B, B_plus, coinf)),
+                    (1- sum(A, A_plus, coinf)) * sum(B, B_plus, coinf))
         Dp <- D/Dmin
+
+      }else{
+        Dmin <-  max(-(sum(A, A_plus, coinf) * sum(B, B_plus, coinf)),
+                     -(1-sum(A, A_plus, coinf)) * (1-sum(B, B_plus, coinf)))
+        Dp <- D/Dmax
       }
 
       #r2
