@@ -150,7 +150,7 @@ get_stats <- function(results_file = ODE_eq,
         Dp <- D/Dmin
 
       }else{
-        Dmin <-  max(-(sum(A, A_plus, coinf) * sum(B, B_plus, coinf)),
+        Dmax <-  max(-(sum(A, A_plus, coinf) * sum(B, B_plus, coinf)),
                      -(1-sum(A, A_plus, coinf)) * (1-sum(B, B_plus, coinf)))
         Dp <- D/Dmax
       }
