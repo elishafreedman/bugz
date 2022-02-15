@@ -17,14 +17,14 @@
 
 
 
-run_model <- function(endo_number = 2,
+run_model <- function(endo_species = 1, endo_number = 2,
                       parameters = params,
                       tmax = 1000,
                       core_spec = NA,
                       kmax = NA) {
   #Build the equations
 
-  ODE <- build_equations(endo_no = endo_number)
+  ODE <- build_equations(endo_no = endo_number, endo_s = endo_species)
 
   ## importing the model function details ##
 
@@ -58,7 +58,6 @@ run_model <- function(endo_number = 2,
   names(ini_state) <- c(ins)
   ini_state <- dplyr::case_when(
     names(ini_state) == "N00" ~  kmax,
-    names(ini_state) == "N1"   ~  1,
     names(ini_state) == "N01"  ~  1,
     names(ini_state) == "N10"  ~ 1
   )
@@ -94,6 +93,7 @@ run_model <- function(endo_number = 2,
   )
   results <- pbapply::pbapply(parameters, 1, ode_calc, cl = clust)
   parallel::stopCluster(clust)
+
 
   return(
     list(

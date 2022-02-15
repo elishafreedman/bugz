@@ -113,7 +113,7 @@ get_stats <- function(results_file = ODE_eq,
       B_plus,
       coinf
     )
-
+print(eq_dat)
  # change test parameters so it's subsetable
 
       par <- colnames(parameters)
@@ -144,11 +144,10 @@ get_stats <- function(results_file = ODE_eq,
 
       #D prime
 
-      if(D > 0){
+      if(D>0){
         Dmin <- min(sum(A, A_plus,coinf) * (1-sum(B, B_plus, coinf)),
                     (1- sum(A, A_plus, coinf)) * sum(B, B_plus, coinf))
         Dp <- D/Dmin
-
       }else{
         Dmax <-  max(-(sum(A, A_plus, coinf) * sum(B, B_plus, coinf)),
                      -(1-sum(A, A_plus, coinf)) * (1-sum(B, B_plus, coinf)))
