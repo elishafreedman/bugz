@@ -46,7 +46,7 @@ run_model <- function(endo_number = 2,
   )
 
   times <- seq(0, tmax, 1)
-  results <- list()
+  results <- matrix(ncol(parameters)+length(ins)+1, nrow= nrow(parameters))
 
   if(is.na(kmax)){
     kmax <- parameters$K[1]*parameters$mu[1]
@@ -71,7 +71,10 @@ run_model <- function(endo_number = 2,
 
 
   ode_calc <- function(x) {
-    list(Parameters = data.frame(t(x)), Results = data.frame(deSolve::ode(ini_state, times, eqn, x)))
+    Parameters = data.frame(t(x))
+    Res = data.frame(deSolve::ode(ini_state, times, eqn, x))
+    Equilibrium = get_equi_points(Res)
+    cbind(Parameters,Res)
   }
   if (is.na(core_spec) == TRUE) {
     ncore <- parallel::detectCores() / 2
