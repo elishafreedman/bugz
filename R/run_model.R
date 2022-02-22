@@ -116,6 +116,7 @@ run_model <- function(endo_number = 2,
   )
 
   sims <- pbapply::pbapply(parameters, 1, ode_calc, cl = clust)
+  sims <- plyr::ldply(sims, rbind, .id = NULL)
 
   parallel::stopCluster(clust)
 
