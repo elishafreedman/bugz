@@ -5,7 +5,7 @@
 #' @param parameters : a data frame containing all parameter combinations to run the model on
 #' @param tmax : The maximum number of time steps
 #' @param core_spec : If the number of parameter combinations is large it may be wise to assign multiple cores for speed. if NA, number of cores used in process will be set at half the number of cores available for use on the computer.
-#'
+#' @param eq_threshold : the threshold of variance between different work
 #' @return list containing the details of the model,
 #' a data frame of all parameter combinations,
 #' and a list of model results for each parameter combination.
@@ -20,6 +20,7 @@
 run_model <- function(endo_number = 2,
                       parameters = params,
                       tmax = 1000,
+                      eq_threshold = 0.1,
                       core_spec = NA,
                       kmax = NA) {
   #Build the equations
@@ -40,16 +41,15 @@ run_model <- function(endo_number = 2,
 
   sim_details <- list(
     simulation_ran = Sys.time(),
-    #endo_species = endo_species,
+    endo_species = endo_species,
     endo_no_per_sp = endo_number,
     max_timesteps = tmax
   )
 
   times <- seq(0, tmax, 1)
-  results <- matrix(ncol(parameters)+length(ins)+1, nrow= nrow(parameters))
 
-  if(is.na(kmax)){
-    kmax <- parameters$K[1]*parameters$mu[1]
+  if (is.na(kmax)) {
+    kmax <- parameters$K[1] * parameters$mu[1]
   }
 
   # create initial states vector #
@@ -65,23 +65,45 @@ run_model <- function(endo_number = 2,
 
   ini_state[is.na(ini_state)] <-  0
   names(ini_state) <- c(ins)
- print(ini_state)
-
+  print(ini_state)
   print(paste("simulation start time", Sys.time()))
 
+  eq_raw <- data.frame(matrix(
+    nrow = nrow(parameters),
+    ncol = ncol(parameters) + length(ini_state)+1)
+  )
+  colnames(eq_raw) <- c(colnames(parameters), "time",names(ini_state))
 
-  ode_calc <- function(x) {
-    Parameters = data.frame(t(x))
-    Res = data.frame(deSolve::ode(ini_state, times, eqn, x))
-    Equilibrium = get_equi_points(Res)
-    cbind(Parameters,Res)
+  isEqui <- function(x, eq_t = eq_threshold){
+    x1 <- round(x[1], 2)
+    x2 <- round(x[2], 2)
+    max(abs(x1 - x2) / x1, na.rm = TRUE) <= eq_t
   }
+
+  ode_calc <- function(x){
+    parameters <- data.frame(t(x))
+    Res <- data.frame(deSolve::ode(ini_state, times, eqn, x))
+        for (k in 1:(nrow(Res) - 1)){
+          eq <- as.matrix(Res[k:(k + 1), ])
+          VarC <- apply(eq[, -1], 2, FUN = isEqui)
+          if (all(VarC) == TRUE){
+            E <- c(parameters, Res[k + 1,])
+            break
+          }
+        }
+    return(E)
+      }
+
+
+
   if (is.na(core_spec) == TRUE) {
     ncore <- parallel::detectCores() / 2
   } else{
     ncore <- core_spec
   }
   print(paste("simulation using", ncore, "cores"))
+
+
   clust <- parallel::makeCluster(ncore, "PSOCK")
   parallel::clusterExport(
     cl = clust,
@@ -91,18 +113,26 @@ run_model <- function(endo_number = 2,
       "times",
       "eqn",
       "parameters",
-      "ncore"
+      "ncore",
+      "eq_threshold",
+      "eq_raw",
+      "isEqui"
     ),
     envir = environment()
   )
-  results <- pbapply::pbapply(parameters, 1, ode_calc, cl = clust)
+
+  sims <- pbapply::pbapply(parameters, 1, ode_calc, cl = clust)
+  return(sims)
+  sims1 <- data.frame(matrix(unlist(sims), nrow=length(sims), byrow=TRUE))
   parallel::stopCluster(clust)
+
+
 
   return(
     list(
-      simulation_details = sim_details,
-      param_combos = parameters,
-      simulations = results
+      "simulation_details" = sim_details,
+      "param_combos" = parameters,
+      "simulations" = sims1
     )
   )
   print(paste("simulatione end time", Sys.time()))
