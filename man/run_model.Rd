@@ -5,23 +5,27 @@
 \title{run_model}
 \usage{
 run_model(
+  endo_species = 1,
   endo_number = 2,
   parameters = params,
   tmax = 1000,
+  eq_threshold = 0.1,
   core_spec = NA,
   kmax = NA
 )
 }
 \arguments{
+\item{endo_species}{: number of endosymbiont species within the system}
+
 \item{endo_number}{: number of endosymbionts per species within the system}
 
 \item{parameters}{: a data frame containing all parameter combinations to run the model on}
 
 \item{tmax}{: The maximum number of time steps}
 
-\item{core_spec}{: If the number of parameter combinations is large it may be wise to assign multiple cores for speed. if NA, number of cores used in process will be set at half the number of cores available for use on the computer.}
+\item{eq_threshold}{: the threshold of variance between each timestep to determine when a stable equilibrium is reached. returns NA if equilibrium is not reached by the last timestep.}
 
-\item{endo_species}{: number of endosymbiont species within the system}
+\item{core_spec}{: If the number of parameter combinations is large it may be wise to assign multiple cores for speed. if NA, number of cores used in process will be set at half the number of cores available for use on the computer.}
 }
 \value{
 list containing the details of the model,

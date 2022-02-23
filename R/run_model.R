@@ -5,7 +5,7 @@
 #' @param parameters : a data frame containing all parameter combinations to run the model on
 #' @param tmax : The maximum number of time steps
 #' @param core_spec : If the number of parameter combinations is large it may be wise to assign multiple cores for speed. if NA, number of cores used in process will be set at half the number of cores available for use on the computer.
-#' @param eq_threshold : the threshold of variance between different work
+#' @param eq_threshold : the threshold of variance between each timestep to determine when a stable equilibrium is reached. returns NA if equilibrium is not reached by the last timestep.
 #' @return list containing the details of the model,
 #' a data frame of all parameter combinations,
 #' and a list of model results for each parameter combination.
