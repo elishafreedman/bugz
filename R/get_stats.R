@@ -24,9 +24,9 @@ get_stats <- function(results_file = ODE_eq,
                       cor_param_method = c("ld", "pearson")){
 
   #split for ease of indexing
-  model_det <- results_file[["model_det"]]
-  parameters <- results_file[["parameters"]]
-  to_test <- results_file[["equilibrium"]]
+  model_det <- results_file[["simulation_details"]]
+  parameters <- results_file[["param_combos"]]
+  to_test <- results_file[["simulations"]]
 
   #subset  the baseline parameters
 
@@ -49,7 +49,7 @@ get_stats <- function(results_file = ODE_eq,
   }else{
     to_test <- to_test
   }
-
+ print(to_test)
   print("test parameters subsetted")
 
   if (length(to_test) == 0){
@@ -60,7 +60,14 @@ get_stats <- function(results_file = ODE_eq,
 
   #proportion of all coinfected
 
-  coinf <- c(rowSums(to_test[, grep("^[^0slnbtKm]*$", colnames(to_test))]))
+  if(model_det$endo_no_per_sp == 1){
+    coinf <- to_test[, "N11"]
+  }else{
+    coinf <- c(rowSums(to_test[, grep("^[^0slnbtKm]*$", colnames(to_test))]))
+  }
+
+
+
 
   #prop single B
     B <- apply(to_test,1, function(x)  x["N01"] / (x["K"] * x["mu"]))
