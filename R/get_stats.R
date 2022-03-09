@@ -65,9 +65,7 @@ get_stats <- function(results_file = ODE_eq,
   }else{
     coinf <- c(rowSums(to_test[, grep("^[^0slnbtKm]*$", colnames(to_test))])/to_test$K[1]*to_test$mu[1])
   }
-print(class(coinf))
 
-print(coinf)
 
 
 
