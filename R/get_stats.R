@@ -49,7 +49,7 @@ get_stats <- function(results_file = ODE_eq,
   }else{
     to_test <- to_test
   }
- print(to_test)
+
   print("test parameters subsetted")
 
   if (length(to_test) == 0){
@@ -61,11 +61,13 @@ get_stats <- function(results_file = ODE_eq,
   #proportion of all coinfected
 
   if(model_det$endo_no_per_sp == 1){
-    coinf <- to_test[, "N11"]
+    coinf <-  apply(to_test,1, function(x)  x["N11"] / (x["K"] * x["mu"]))
   }else{
-    coinf <- c(rowSums(to_test[, grep("^[^0slnbtKm]*$", colnames(to_test))]))
+    coinf <- c(rowSums(to_test[, grep("^[^0slnbtKm]*$", colnames(to_test))])/to_test$K[1]*to_test$mu[1])
   }
+print(class(coinf))
 
+print(coinf)
 
 
 
@@ -120,7 +122,7 @@ get_stats <- function(results_file = ODE_eq,
       B_plus,
       coinf
     )
-print(eq_dat)
+
  # change test parameters so it's subsetable
 
       par <- colnames(parameters)
