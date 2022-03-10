@@ -24,9 +24,9 @@ get_stats <- function(results_file = ODE_eq,
                       cor_param_method = c("ld", "pearson")){
 
   #split for ease of indexing
-  model_det <- results_file[["model_det"]]
-  parameters <- results_file[["parameters"]]
-  to_test <- results_file[["equilibrium"]]
+  model_det <- results_file[["simulation_details"]]
+  parameters <- results_file[["param_combos"]]
+  to_test <- results_file[["simulations"]]
 
   #subset  the baseline parameters
 
@@ -61,13 +61,12 @@ get_stats <- function(results_file = ODE_eq,
   total_pops <- data.frame(total_props = rowSums(test_sans_param)) #total population
   infected <- cbind(test_sans_param, total_pops)
   prop_data <- apply(infected,c(1,2), function(x) x/x["total_pops"])
-  print(prop_data)
   fin_data <- cbind(to_test[, colnames("parameters")], prop_data[, -prop_data["total_pops"]])
 
-<<<<<<< Updated upstream
-  coinf <- c(rowSums(to_test[, grep("^[^0slnbtKm]*$", colnames(to_test))]))
-=======
-  print(fin_data)
+
+
+
+  #print(fin_data)
 
   # proportion of all coinfected
   coinf <- c(rowSums(fin_data[, grep("^[^0slnbtKm]*$", colnames(fin_data))]))
@@ -77,7 +76,7 @@ get_stats <- function(results_file = ODE_eq,
 
   # proportion A
   A <- fin_data$N01
->>>>>>> Stashed changes
+
 
 
   # proportion double B
