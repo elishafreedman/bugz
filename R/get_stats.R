@@ -49,23 +49,38 @@ get_stats <- function(results_file = ODE_eq,
   }else{
     to_test <- to_test
   }
-
   print("test parameters subsetted")
 
   if (length(to_test) == 0){
     warning("Parameter combinations you would like to test were not simulated!")
   }
 
-  eq_infect <- c("N00", "A", "B", "A_plus", "B_plus", "coinf")
+  #total proportions
 
-  #proportion of all coinfected
+  test_sans_param <- to_test[, grep("^[^slnbtKm]*$", colnames(to_test))]
+  total_pops <- data.frame(total_props = rowSums(test_sans_param)) #total population
+  infected <- cbind(test_sans_param, total_pops)
+  prop_data <- apply(infected,c(1,2), function(x) x/x["total_pops"])
+  print(prop_data)
+  fin_data <- cbind(to_test[, colnames("parameters")], prop_data[, -prop_data["total_pops"]])
 
+<<<<<<< Updated upstream
   coinf <- c(rowSums(to_test[, grep("^[^0slnbtKm]*$", colnames(to_test))]))
+=======
+  print(fin_data)
 
-  #prop single B
-    B <- apply(to_test,1, function(x)  x["N01"] / (x["K"] * x["mu"]))
+  # proportion of all coinfected
+  coinf <- c(rowSums(fin_data[, grep("^[^0slnbtKm]*$", colnames(fin_data))]))
 
-  # double B
+  # proportion A
+  A <- fin_data$N10
+
+  # proportion A
+  A <- fin_data$N01
+>>>>>>> Stashed changes
+
+
+  # proportion double B
 
   #string pattern needed to recognise columns for species B co-infection
 
@@ -76,16 +91,12 @@ get_stats <- function(results_file = ODE_eq,
     }
 
     patB <- na.omit(patB)
-    dubB <- to_test |> dplyr::select(patB)
+    dubB <- fin_data |> dplyr::select(patB)
     dubB <- rowSums(dubB)
     dubBparam <- cbind(parameters, dubB)
-    B_plus <- apply(dubBparam, 1, function(x) x["dubB"] / (x["K"] * x["mu"]))
 
 
-     #prop single A
-    A <- apply(to_test,1, function(x)  x["N10"] / (x["K"] * x["mu"]))
-
-    # single species co-infections
+    # proportion double A
 
     #string pattern needed to recognise columns for species A co-infections
     patA <- rep(NA, model_det$endo_no_per_sp)
@@ -95,18 +106,19 @@ get_stats <- function(results_file = ODE_eq,
     }
 
     patA <- na.omit(patA)
-    dubA <- to_test |> dplyr::select(patA)
+    dubA <- fin_data |> dplyr::select(patA)
     dubA <- rowSums(dubA)
     dubAparam <- cbind(parameters, dubA)
-    A_plus <- apply(dubAparam, 1, function(x) x["dubA"] / (x["K"] * x["mu"]))
 
-    #prop_uninfected
 
-    N00 <- apply(to_test, 1, function(x)  x["N00"] / (x["K"] * x["mu"]))
+  #proportions
+
+  # eq_infect <- c("N00", "A", "B", "A_plus", "B_plus", "coinf")
+
 
     eq_dat <- cbind(
       parameters,
-      N00,
+      fin_data$N00,
       A,
       B,
       A_plus,
