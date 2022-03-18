@@ -1,6 +1,5 @@
 #' get_stats
 #'
-
 #' @param results_file : name of file where raw results have been stored. This file must be uploaded to the environment
 #'
 #' @param test_parameters : vector of parameters tested.  if NA, all parameters will be tested apart from designated baseline.
@@ -39,7 +38,7 @@ get_stats <- function(results_file = ODE_eq,
 
   if (length(to_test) == 0){
     warning("Baseline values for parameters you would like to test were not simulated!")
-    #isolating parameter combinations of interest from the dataset
+    #isolating parameter combinations of interest from the data set
   }
   if(length(test_parameters) >= 1 && is.na(test_parameters) == FALSE){
 
@@ -58,19 +57,22 @@ get_stats <- function(results_file = ODE_eq,
   #total proportions
 
   test_sans_param <- to_test[, grep("^[^slnbtKm]*$", colnames(to_test))]
-  total_pops <- data.frame(total_props = rowSums(test_sans_param)) #total population
-  infected <- cbind(test_sans_param, total_pops)
-  prop_data <- apply(infected[],c(1,2), function(x) x/infected["total_pops"[x]])
-  fin_data <- cbind(to_test[, colnames("parameters")], prop_data[, -prop_data["total_pops"]])
 
+  prop_data <- rowSums(test_sans_param)
+  for(i in 1:length(prop_data)){
+    fin_data <- apply(test_sans_param, c(1,2), function(x) x/prop_data[i])
+  }
+
+  print(fin_data)
+  print(class(fin_data))
   # proportion of all coinfected
   coinf <- c(rowSums(fin_data[, grep("^[^0slnbtKm]*$", colnames(fin_data))]))
 
   # proportion A
   A <- fin_data$N10
 
-  # proportion A
-  A <- fin_data$N01
+  # proportion B
+  B <- fin_data$N01
 
 
 
@@ -107,9 +109,6 @@ get_stats <- function(results_file = ODE_eq,
 
   #proportions
 
-  # eq_infect <- c("N00", "A", "B", "A_plus", "B_plus", "coinf")
-
-
     eq_dat <- cbind(
       parameters,
       fin_data$N00,
@@ -120,7 +119,6 @@ get_stats <- function(results_file = ODE_eq,
       coinf
     )
 
- # change test parameters so it's subsetable
 
       par <- colnames(parameters)
       eq_met <-tidyr::pivot_longer(eq_dat, all_of(par), names_to = "parameter")
