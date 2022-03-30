@@ -62,17 +62,17 @@ get_stats <- function(results_file = ODE_eq,
   for(i in 1:length(prop_data)){
     fin_data <- apply(test_sans_param, c(1,2), function(x) x/prop_data[i])
   }
-
+  fin_data <- as.data.frame(fin_data)
   print(fin_data)
   print(class(fin_data))
   # proportion of all coinfected
   coinf <- c(rowSums(fin_data[, grep("^[^0slnbtKm]*$", colnames(fin_data))]))
 
   # proportion A
-  A <- fin_data$N10
+  A <- fin_data[,"N10"]
 
   # proportion B
-  B <- fin_data$N01
+  B <- fin_data[,"N01"]
 
 
 
