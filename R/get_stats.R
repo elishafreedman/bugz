@@ -63,8 +63,6 @@ get_stats <- function(results_file = ODE_eq,
     fin_data <- apply(test_sans_param, c(1,2), function(x) x/prop_data[i])
   }
   fin_data <- as.data.frame(fin_data)
-  print(fin_data)
-  print(class(fin_data))
   # proportion of all coinfected
   coinf <- c(rowSums(fin_data[, grep("^[^0slnbtKm]*$", colnames(fin_data))]))
 
@@ -88,8 +86,8 @@ get_stats <- function(results_file = ODE_eq,
 
     patB <- na.omit(patB)
     dubB <- fin_data |> dplyr::select(patB)
-    dubB <- rowSums(dubB)
-    dubBparam <- cbind(parameters, dubB)
+    B_plus <- data.frame(B_plus = rowSums(dubB))
+    # dubBparam <- cbind(parameters, dubB)
 
 
     # proportion double A
@@ -103,22 +101,24 @@ get_stats <- function(results_file = ODE_eq,
 
     patA <- na.omit(patA)
     dubA <- fin_data |> dplyr::select(patA)
-    dubA <- rowSums(dubA)
-    dubAparam <- cbind(parameters, dubA)
+    A_plus <-  data.frame(A_plus = rowSums(dubA))
+    print(class(A_plus))
+    # dubAparam <- cbind(parameters, dubA)
 
 
-  #proportions
+  #proportions+parameters
+
+    eq_infect <- c("N00", "A", "B", "A_plus", "B_plus", "coinf")
 
     eq_dat <- cbind(
       parameters,
       fin_data$N00,
-      A,
-      B,
+      fin_data$A,
+      fin_data$B,
       A_plus,
       B_plus,
       coinf
     )
-
 
       par <- colnames(parameters)
       eq_met <-tidyr::pivot_longer(eq_dat, all_of(par), names_to = "parameter")
@@ -134,7 +134,6 @@ get_stats <- function(results_file = ODE_eq,
 
 
     #calculating correlation coefficients
-
 
     # linkage disequilibrium
 
