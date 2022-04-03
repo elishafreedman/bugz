@@ -66,12 +66,15 @@ get_stats <- function(results_file = ODE_eq,
   # proportion of all coinfected
   coinf <- c(rowSums(fin_data[, grep("^[^0slnbtKm]*$", colnames(fin_data))]))
 
+  #proportion uninfected
+  N00 <- fin_data[,"N00"]
+
   # proportion A
   A <- fin_data[,"N10"]
+  #print(A)
 
   # proportion B
   B <- fin_data[,"N01"]
-
 
 
   # proportion double B
@@ -103,6 +106,7 @@ get_stats <- function(results_file = ODE_eq,
     dubA <- fin_data |> dplyr::select(patA)
     A_plus <-  data.frame(A_plus = rowSums(dubA))
     print(class(A_plus))
+    # print(A_plus)
     # dubAparam <- cbind(parameters, dubA)
 
 
@@ -112,17 +116,17 @@ get_stats <- function(results_file = ODE_eq,
 
     eq_dat <- cbind(
       parameters,
-      fin_data$N00,
-      fin_data$A,
-      fin_data$B,
+      N00,
+      A,
+      B,
       A_plus,
       B_plus,
       coinf
     )
+    print(eq_dat)
 
       par <- colnames(parameters)
       eq_met <-tidyr::pivot_longer(eq_dat, all_of(par), names_to = "parameter")
-
     eq_met <- tidyr::pivot_longer(eq_met,
                                   all_of(eq_infect),
                                   names_to = "infection_status",
