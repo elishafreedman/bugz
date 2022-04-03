@@ -1,6 +1,5 @@
 #' get_stats
 #'
-
 #' @param results_file : name of file where raw results have been stored. This file must be uploaded to the environment
 #'
 #' @param test_parameters : vector of parameters tested.  if NA, all parameters will be tested apart from designated baseline.
@@ -39,7 +38,7 @@ get_stats <- function(results_file = ODE_eq,
 
   if (length(to_test) == 0){
     warning("Baseline values for parameters you would like to test were not simulated!")
-    #isolating parameter combinations of interest from the dataset
+    #isolating parameter combinations of interest from the data set
   }
   if(length(test_parameters) >= 1 && is.na(test_parameters) == FALSE){
 
@@ -49,32 +48,36 @@ get_stats <- function(results_file = ODE_eq,
   }else{
     to_test <- to_test
   }
-
   print("test parameters subsetted")
 
   if (length(to_test) == 0){
     warning("Parameter combinations you would like to test were not simulated!")
   }
 
-  eq_infect <- c("N00", "A", "B", "A_plus", "B_plus", "coinf")
+  #total proportions
 
-  #proportion of all coinfected
+  test_sans_param <- to_test[, grep("^[^slnbtKm]*$", colnames(to_test))]
 
-  if(model_det$endo_no_per_sp == 1){
-    coinf <-  apply(to_test,1, function(x)  x["N11"] / (x["K"] * x["mu"]))
-  }else{
-    coinf <- c(rowSums(to_test[, grep("^[^0slnbtKm]*$", colnames(to_test))])/to_test$K[1]*to_test$mu[1])
+  prop_data <- rowSums(test_sans_param)
+  for(i in 1:length(prop_data)){
+    fin_data <- apply(test_sans_param, c(1,2), function(x) x/prop_data[i])
   }
-print(class(coinf))
+  fin_data <- as.data.frame(fin_data)
+  # proportion of all coinfected
+  coinf <- c(rowSums(fin_data[, grep("^[^0slnbtKm]*$", colnames(fin_data))]))
 
-print(coinf)
+  #proportion uninfected
+  N00 <- fin_data[,"N00"]
+
+  # proportion A
+  A <- fin_data[,"N10"]
+  #print(A)
+
+  # proportion B
+  B <- fin_data[,"N01"]
 
 
-
-  #prop single B
-    B <- apply(to_test,1, function(x)  x["N01"] / (x["K"] * x["mu"]))
-
-  # double B
+  # proportion double B
 
   #string pattern needed to recognise columns for species B co-infection
 
@@ -85,16 +88,12 @@ print(coinf)
     }
 
     patB <- na.omit(patB)
-    dubB <- to_test |> dplyr::select(patB)
-    dubB <- rowSums(dubB)
-    dubBparam <- cbind(parameters, dubB)
-    B_plus <- apply(dubBparam, 1, function(x) x["dubB"] / (x["K"] * x["mu"]))
+    dubB <- fin_data |> dplyr::select(patB)
+    B_plus <- data.frame(B_plus = rowSums(dubB))
+    # dubBparam <- cbind(parameters, dubB)
 
 
-     #prop single A
-    A <- apply(to_test,1, function(x)  x["N10"] / (x["K"] * x["mu"]))
-
-    # single species co-infections
+    # proportion double A
 
     #string pattern needed to recognise columns for species A co-infections
     patA <- rep(NA, model_det$endo_no_per_sp)
@@ -104,14 +103,16 @@ print(coinf)
     }
 
     patA <- na.omit(patA)
-    dubA <- to_test |> dplyr::select(patA)
-    dubA <- rowSums(dubA)
-    dubAparam <- cbind(parameters, dubA)
-    A_plus <- apply(dubAparam, 1, function(x) x["dubA"] / (x["K"] * x["mu"]))
+    dubA <- fin_data |> dplyr::select(patA)
+    A_plus <-  data.frame(A_plus = rowSums(dubA))
+    print(class(A_plus))
+    # print(A_plus)
+    # dubAparam <- cbind(parameters, dubA)
 
-    #prop_uninfected
 
-    N00 <- apply(to_test, 1, function(x)  x["N00"] / (x["K"] * x["mu"]))
+  #proportions+parameters
+
+    eq_infect <- c("N00", "A", "B", "A_plus", "B_plus", "coinf")
 
     eq_dat <- cbind(
       parameters,
@@ -122,12 +123,10 @@ print(coinf)
       B_plus,
       coinf
     )
-
- # change test parameters so it's subsetable
+    print(eq_dat)
 
       par <- colnames(parameters)
       eq_met <-tidyr::pivot_longer(eq_dat, all_of(par), names_to = "parameter")
-
     eq_met <- tidyr::pivot_longer(eq_met,
                                   all_of(eq_infect),
                                   names_to = "infection_status",
@@ -139,7 +138,6 @@ print(coinf)
 
 
     #calculating correlation coefficients
-
 
     # linkage disequilibrium
 
@@ -153,10 +151,11 @@ print(coinf)
 
       #D prime
 
-      if(D>0){
+      if(D > 0){
         Dmin <- min(sum(A, A_plus,coinf) * (1-sum(B, B_plus, coinf)),
                     (1- sum(A, A_plus, coinf)) * sum(B, B_plus, coinf))
         Dp <- D/Dmin
+
       }else{
         Dmax <-  max(-(sum(A, A_plus, coinf) * sum(B, B_plus, coinf)),
                      -(1-sum(A, A_plus, coinf)) * (1-sum(B, B_plus, coinf)))
