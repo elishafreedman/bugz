@@ -193,7 +193,7 @@ get_stats <- function(results_file = ODE_eq,
         cols <- c(colnames(parameters))
         eq_p <-data.frame(matrix(ncol = length(parameters)))
         colnames(eq_p) <- cols
-        for (i in 1:nrow(to_test)){
+        for (i in 1:nrow(eq_dat)){
           eq_p[i, ] <- parameters[i,]
             eq_ld[i, ] <- ld(
               coinf = eq_dat$coinf[i],
