@@ -1,23 +1,23 @@
 #reorder
-Reorder <- function(res = all_results){
+Reorder <- function(res = all_results, mod_det = mod_det){
   #split vectors for reordering
   #host states
   h_states <-
-    colnames(res[, grep("^[^slnbtKm]*$", colnames(all_results))])
+    colnames(res[, grep("^[^slnbtKm]*$", colnames(res))])
   #uninfected
   zero_endo <- h_states[grep("00", h_states)]
   #only A
-  A <- rep(NA, model_det$endo_no_per_sp)
-  for (i in 1:model_det$endo_no_per_sp) {
+  A <- rep(NA, mod_det$endo_no_per_sp)
+  for (i in 1:mod_det$endo_no_per_sp) {
     A[i] <- h_states[grep(paste0(i, "0"), h_states)]
   }
   #only B
-  B <- rep(NA, model_det$endo_no_per_sp)
-  for (i in 1:model_det$endo_no_per_sp) {
+  B <- rep(NA, mod_det$endo_no_per_sp)
+  for (i in 1:mod_det$endo_no_per_sp) {
     B[i] <- h_states[grep(paste0("0", i), h_states)]
   }
   #double
-  dubs <- paste0("N", c(1:model_det$endo_no_per_sp) * 11)
+  dubs <- paste0("N", c(1:mod_det$endo_no_per_sp) * 11)
   #non_zero coinfections
   to_remove <- c(dubs, B, A, zero_endo)
   h_states_coinf <- h_states[!h_states %in% to_remove]

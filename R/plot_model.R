@@ -3,7 +3,7 @@
 #' @param results_file : results
 #' @param plot_file : file name to save plots
 #' @param Colors :  vector of colours to be included in the graph
-#' @return PDF of plots of results over timesteps
+#' @return PDF of plots of results over time steps
 #' @import ggplot2
 #' @export
 #'
@@ -70,7 +70,7 @@ plot_model <- function(results_file = ODE_results,
     }
 
 
-    col <- Reorder(res = all_results)
+    col <- Reorder(res = all_results, mod_det = model_det)
 
 
     initial_plot <-

@@ -18,6 +18,8 @@ shiny_endo_plot <-function(parameters = params,
                       tmax = 2500,
                       kmax = NA,
                       Colors = c("blue","orange", "red")){
+
+  model_det <- list(endo_species = endo_species, endo_no_per_sp = endo_number)
   eqn <- build_equations(endo_no = endo_number)
   ins <- eqn[["states"]]
   eqn_s <- eqn[["equations"]]
@@ -93,7 +95,7 @@ shiny_endo_plot <-function(parameters = params,
 
 #reorder factors to match the colours with roughly the proportion of endosymbionts in each state
 
-    col <- Reorder(res = inititial_plot)
+    col <- Reorder(res = initial_plot, mod_det = model_det)
 
     if(endo_sp == 2){
       # k <- (endo_sp+1)^(endo_num)-1
@@ -104,7 +106,6 @@ shiny_endo_plot <-function(parameters = params,
     }
 
     #reformat
-    col <- c(colnames(initial_plot[,-1]))
     initial_plot <- tidyr::pivot_longer(initial_plot, all_of(col), names_to = "infection_status")
     initial_plot$infection_status <- factor(initial_plot$infection_status, levels = col)
     ggplot2::ggplot(initial_plot)+
@@ -174,4 +175,4 @@ shiny_endo_plot <-function(parameters = params,
   }
   return(shinyApp(ui=ui, server=server))
 }
-#
+
