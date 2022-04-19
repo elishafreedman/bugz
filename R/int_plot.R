@@ -1,4 +1,4 @@
-#' int_plot
+#' shiny_plot
 #'
 #' @param parameters : parameter combinations that will be simulated
 #' @param endo_species : number of endosymbiont species no
@@ -11,13 +11,13 @@
 #' @import shiny
 #' @import ggplot2
 #' @examples params <- set_parameters(two_species = TRUE,K = 200,lambda = 1,mu = 0.5,betaA =0.001,betaB = 0.001,sigmaA = 0.1,sigmaB = 0.1,sigmaAB = 1,sigmaBA = seq(0, 1, 0.1),nuA = 0.01,nuB = 0.01)
-#' int_plot(parameters = params, endo_species = 2, endo_number = 1)
-int_plot <-function(parameters = params,
-                    endo_species = 2,
-                    endo_number = 1,
-                    tmax = 2500,
-                    kmax = NA,
-                    Colors = c("blue","orange", "red")){
+#' shiny_plot(parameters = params, endo_species = 2, endo_number = 1)
+shiny_endo_plot <-function(parameters = params,
+                      endo_species = 2,
+                      endo_number = 1,
+                      tmax = 2500,
+                      kmax = NA,
+                      Colors = c("blue","orange", "red")){
   eqn <- build_equations(endo_no = endo_number)
   ins <- eqn[["states"]]
   eqn_s <- eqn[["equations"]]
@@ -29,17 +29,17 @@ int_plot <-function(parameters = params,
   if(is.na(kmax)){
     kmax <- parameters$K[1]*parameters$mu[1]
   }
-    ini_state <- c(rep(0, length(ins)))
-    names(ini_state) <- c(ins)
-    ini_state <- dplyr::case_when(
-      names(ini_state) == "N0"~kmax,
-      names(ini_state) == "N00"~kmax,
-      names(ini_state) == "N1"~ 1,
-      names(ini_state) == "N01"~1,
-      names(ini_state) == "N10"~1
-    )
-    ini_state[is.na(ini_state)] <-  0
-    names(ini_state) <- c(ins)
+  ini_state <- c(rep(0, length(ins)))
+  names(ini_state) <- c(ins)
+  ini_state <- dplyr::case_when(
+    names(ini_state) == "N0"~kmax,
+    names(ini_state) == "N00"~kmax,
+    names(ini_state) == "N1"~ 1,
+    names(ini_state) == "N01"~1,
+    names(ini_state) == "N10"~1
+  )
+  ini_state[is.na(ini_state)] <-  0
+  names(ini_state) <- c(ins)
 
 
 
@@ -62,7 +62,7 @@ int_plot <-function(parameters = params,
                     tmax = tmax,
                     endo_sp = endo_species,
                     endo_num = endo_number
-                    ){
+  ){
     if(endo_species == 2){
       int_param <- c(K=K,
                      lambda = lambda,
@@ -76,11 +76,11 @@ int_plot <-function(parameters = params,
                      nuA = nuA,
                      nuB = nuB)
     }else{
-      sigmaB = NA
-      sigmaAB = NA
-      sigmaBA = NA
-      nuB = NA
-      betaB = NA
+      sigmaB = 0
+      sigmaAB = 0
+      sigmaBA = 0
+      nuB = 0
+      betaB = 0
       int_param <- c(K=K,
                      lambda = lambda,
                      betaA = betaA,
@@ -90,12 +90,14 @@ int_plot <-function(parameters = params,
     }
     #run model
     initial_plot <- data.frame(deSolve::ode(inistat, time, equation, int_param))
-# print(ncol(initial_plot))
 
+#reorder factors to match the colours with roughly the proportion of endosymbionts in each state
+
+    col <- Reorder(res = inititial_plot)
 
     if(endo_sp == 2){
       # k <- (endo_sp+1)^(endo_num)-1
-     cols <- grDevices::colorRampPalette(Colors)(ncol(initial_plot)-2)
+      cols <- grDevices::colorRampPalette(Colors)(ncol(initial_plot)-2)
     }else{
       # k <- endo_num-1
       cols <-  grDevices::colorRampPalette(Colors)(ncol(initial_plot)-2)
@@ -106,9 +108,9 @@ int_plot <-function(parameters = params,
     initial_plot <- tidyr::pivot_longer(initial_plot, all_of(col), names_to = "infection_status")
     initial_plot$infection_status <- factor(initial_plot$infection_status, levels = col)
     ggplot2::ggplot(initial_plot)+
-      geom_line(aes(x=time, y = value,
-                    colour = infection_status,
-                    group = infection_status), size = 1.5)+
+      ggplot2::geom_line(aes(x=time, y = value,
+                             colour = infection_status,
+                             group = infection_status), size = 1.5)+
       ylab(label="# Host species")+
       xlab(label="Timesteps")+
       labs(colour = "infection status \n         A  B")+
@@ -172,4 +174,4 @@ int_plot <-function(parameters = params,
   }
   return(shinyApp(ui=ui, server=server))
 }
-
+#
