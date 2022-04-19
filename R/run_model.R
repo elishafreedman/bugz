@@ -1,6 +1,6 @@
 #' run_model
 #'
-#' @param endo_species : number of endosymbiont species within the system
+#' @param endo_species : number of endosymbiont species within the system. if 1, model initial states will only start with 1 species.
 #' @param endo_number : number of endosymbionts per species within the system
 #' @param parameters : a data frame containing all parameter combinations to run the model on
 #' @param tmax : The maximum number of time steps
@@ -12,12 +12,13 @@
 #' @export
 #'
 #' @examples
-#' params <- set_parameters(two_species = TRUE,K = 200,lambda = 1,mu = 0.5,betaA =0.001,betaB = 0.001,sigmaA = 0.1,sigmaB = 0.1,sigmaAB = 1,sigmaBA = seq(0, 1, 0.1),nuA = 0.01,nuB = 0.01)
+#' params <- set_parameters(K = 200,lambda = 1,mu = 0.5,betaA =0.001,betaB = 0.001,sigmaA = 0.1,sigmaB = 0.1,sigmaAB = 1,sigmaBA = seq(0, 1, 0.1),nuA = 0.01,nuB = 0.01)
 #' run_model(endo_species = 2,endo_number = 2,parameters = params,tmax = 1000,core_spec = NA, outfile = "ODE_results.rda")
 
 
 
 run_model <- function(endo_number = 2,
+                      endo_species = 2,
                       parameters = params,
                       tmax = 1000,
                       eq_threshold = 0.1,
@@ -29,7 +30,6 @@ run_model <- function(endo_number = 2,
 
   ## importing the model function details ##
 
-  endo_species <- ODE[["endo_s"]]
   endo_number <- ODE[["endo_no_per_sp"]]
   eqn <- ODE[["equations"]]
   ins <- ODE[["states"]]
@@ -54,14 +54,23 @@ run_model <- function(endo_number = 2,
 
   # create initial states vector #
 
-  ini_state <- c(rep(0, length(ins)))
-  names(ini_state) <- c(ins)
-  ini_state <- dplyr::case_when(
-    names(ini_state) == "N00" ~  kmax,
-    names(ini_state) == "N1"   ~  1,
-    names(ini_state) == "N01"  ~  1,
-    names(ini_state) == "N10"  ~ 1
-  )
+ if(endo_species == 2){
+    ini_state <- c(rep(0, length(ins)))
+    names(ini_state) <- c(ins)
+    ini_state <- dplyr::case_when(
+      names(ini_state) == "N00" ~  kmax,
+      names(ini_state) == "N01"  ~  1,
+      names(ini_state) == "N10"  ~ 1
+    )
+ } else if(endo_species == 1){
+    ini_state <- c(rep(0, length(ins)))
+    names(ini_state) <- c(ins)
+    ini_state <- dplyr::case_when(
+      names(ini_state) == "N00" ~  kmax,
+      names(ini_state) == "N01"  ~  0,
+      names(ini_state) == "N10"  ~ 1
+    )
+ }
 
   ini_state[is.na(ini_state)] <-  0
   names(ini_state) <- c(ins)
@@ -70,20 +79,20 @@ run_model <- function(endo_number = 2,
 
 
 
-  isEqui <- function(x, eq_t = eq_threshold){
+  isEqui <- function(x, eq_t = eq_threshold) {
     x1 <- round(x[1], 2)
     x2 <- round(x[2], 2)
     max(abs(x1 - x2) / x1, na.rm = TRUE) <= eq_t
 
   }
 
-  ode_calc <- function(x){
+  ode_calc <- function(x) {
     Res <- data.frame(deSolve::ode(ini_state, times, eqn, x))
-    for (k in 1:(nrow(Res) - 1)){
-      eq <- as.matrix(Res[k:(k + 1), ])
+    for (k in 1:(nrow(Res) - 1)) {
+      eq <- as.matrix(Res[k:(k + 1),])
       VarC <- apply(eq[, -1], 2, FUN = isEqui)
-      if (all(VarC) == TRUE){
-        eq_raw <- data.frame(c(x, Res[k + 1,]))
+      if (all(VarC) == TRUE) {
+        eq_raw <- data.frame(c(x, Res[k + 1, ]))
         break
       }
     }
