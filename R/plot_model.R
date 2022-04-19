@@ -53,25 +53,9 @@ plot_model <- function(results_file = ODE_results,
       ))
     }
 
-    #recreate new ordered columns
-    #species A
-    specA <- rev(seq(1, model_det$endo_no_per_sp))
-    colA <- rep(NA, length(specA))
-    for (i in 1:length(specA)) {
-      reps <- rep(specA[i], model_det$endo_no_per_sp)
-      colA[i] <- paste0("N", specA[i], 0)
-    }
-
-    #species B
-    specB <- seq(1, model_det$endo_no_per_sp)
-    colB <- rep(NA, length(specB))
-    for (i in 1:length(specB)) {
-      colB[i] <- paste0("N", 0, specB[i])
-    }
-
-
     col <- Reorder(res = all_results, mod_det = model_det)
-
+    col_labs <- gsub("\\N","",col)
+    # col_labs <- gsub("([1-9])([1-9]", "\\1\\2", col_labs)
 
     initial_plot <-
       tidyr::pivot_longer(i$Results, all_of(col), names_to = "infection_status")
@@ -91,7 +75,7 @@ plot_model <- function(results_file = ODE_results,
         ylab(label = "# Host species") +
         xlab(label = "Timesteps") +
         labs(colour = "infection status \n         A  B") +
-        scale_colour_manual(values = c("black",  cols)) +
+        scale_colour_manual(values = c("black",  cols),labels =  col_labs) +
         theme_classic() +
         theme(axis.text = element_text(size = 20)) +
         theme(axis.title = element_text(size = 20)) +
