@@ -17,7 +17,9 @@ shiny_endo_plot <- function(parameters = params,
                             endo_number = 1,
                             tmax = 2500,
                             kmax = NA,
-                            Colors = c("blue", "orange", "red")) {
+                            Colors = c("blue", "orange", "red"),
+                            ylabel = "Proportion infected",
+                            xlabel = "Timesteps") {
   model_det <-
     list(endo_species = endo_species, endo_no_per_sp = endo_number)
   eqn <- build_equations(endo_no = endo_number)
@@ -101,7 +103,7 @@ shiny_endo_plot <- function(parameters = params,
 
     col <- Reorder(res = initial_plot, mod_det = model_det)
     col_labs <- gsub("\\N","",col)
-    col_labs <- gsub("([1:100])", "\\\1 \\\2", col_labs)
+    col_labs <- gsub("([1:100])", "\\1 \\2", col_labs)
 
     if (endo_sp == 2) {
       cols <-
@@ -124,9 +126,9 @@ shiny_endo_plot <- function(parameters = params,
         group = infection_status
       ),
       size = 1.5) +
-      ylab(label = "# Host species") +
-      xlab(label = "Timesteps") +
-      labs(colour = "infection status \n         A  B") +
+      ylab(label = ylabel) +
+      xlab(label = xlabel) +
+      labs(colour = "infection status \n         A B") +
       scale_colour_manual(values = c("black", cols), labels = col_labs) +
       theme_classic() +
       theme(axis.text = element_text(size = 20)) +
