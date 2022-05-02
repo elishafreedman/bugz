@@ -14,8 +14,53 @@
 
 #single transmission rate model added here represented by the argument "endosymbiont type"
 
-build_equations <- function(endo_no = endo_number){
+build_equations <- function(endo_no = endo_number, endo_sp = endo_species){
   k <- endo_no + 1 #number of endosymbionts (including the uninfected state)
+
+  if(endo_sp == 1){
+    Ns <- rep("", k)
+    for (i in 0:(k - 1)){
+      Ns[i + 1] <- paste0("N", i, 0)
+    }
+    NN <- paste(Ns, collapse = "+")
+
+    # left sides of equations:
+    leftSides <- paste0("d", Ns)
+
+    # matrix of terms for demography:
+    matD <- matrix(rep(NA, k), nrow = 1)
+    for (i in 0:(k - 1)){
+      matD[i + 1] <-
+        paste0("lambda*N", i, 0,"*(1 - (", NN, ")/K) - mu*N", i, 0)
+    }
+    dim(matD) <- NULL
+
+    # matrix of terms for the  influx force of infection
+
+    # matrix for transmission events:
+
+
+    N_A <- paste(Ns[-(0:(k - 1) * k + 1)], collapse = "+")
+    # total number of species with symbiont A:
+
+    matrix0123 <- c(0:(k - 1), k)
+
+    pA <- paste0("sigmaA^", matrix0123)
+
+    #matrix of transmission
+    matT <- rep("", k)
+    for (i in 0:(k - 1)){
+      if (i > 0){
+        # influx of A symbionts
+        matT[i + 1] <- paste0("+betaA*(", N_A, ")*", pA[i], "*N", i - 1,0)
+      }
+
+      if (i < (k - 1)){
+        #outflux of A endosymbionts
+        matT[i + 1] <- paste0(matT[i + 1], "-betaA*(", N_A, ")*", pA[i + 1], "*N", i,0)
+      }
+    }
+}else{
 
   Ns <- rep("", k ^ 2)
   for (i in 0:(k - 1)){
@@ -103,7 +148,7 @@ build_equations <- function(endo_no = endo_number){
           paste0(matG[i + 1, j + 1], " + ", j + 1, "*nuB*N", i, j + 1)
     }
   }
-  #}
+}
 
     equations <-  paste0("    ", leftSides, " = ", matD, matT, " + ", matL, " + ", matG, "\n")
 
@@ -127,4 +172,3 @@ build_equations <- function(endo_no = endo_number){
   )
   return(ODE)
 }
-
