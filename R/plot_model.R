@@ -55,7 +55,7 @@ plot_model <- function(results_file = ODE_results,
 
     col <- Reorder(res = all_results, mod_det = model_det)
     col_labs <- gsub("\\N","",col)
-    # col_labs <- gsub("([1-9])([1-9]", "\\1\\2", col_labs)
+
 
     initial_plot <-
       tidyr::pivot_longer(i$Results, all_of(col), names_to = "infection_status")

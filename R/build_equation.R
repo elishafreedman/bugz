@@ -163,7 +163,7 @@ build_equations <- function(endo_no = endo_number, endo_sp = endo_species){
     }
   }
 
-  equations <-  paste0("    ", leftSides, " = ", matD, matT, " + ", matL, " + ", matG, "\n")
+  equations <-  paste0("    ", leftSides, " = ", matT, " + ", matL, " + ", matG, "\n")
 
   equations <- paste0(equations, collapse = "\n")
   functionFront <-

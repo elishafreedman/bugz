@@ -24,7 +24,6 @@ Reorder <- function(res = all_results, mod_det = mod_det){
     h_states_coinf2 <- tail(h_states_coinf, length(h_states_coinf) / 2)
     col <-c(zero_endo, A, h_states_coinf1, dubs, h_states_coinf2, B)
   }
-  return(col)
 }
 
   #concatenate vectors
@@ -32,5 +31,4 @@ Reorder <- function(res = all_results, mod_det = mod_det){
   if(mod_det$endo_species==1){
     col <-c(zero_endo, A)
   }
-  return(col)
 }

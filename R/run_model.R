@@ -23,10 +23,11 @@ run_model <- function(endo_number = 2,
                       tmax = 1000,
                       eq_threshold = 0.1,
                       core_spec = NA,
-                      kmax = NA) {
+                      kmax = NA,
+                      demographics=TRUE) {
   #Build the equations
 
-  ODE <- build_equations(endo_no = endo_number, endo_sp = endo_species)
+  ODE <- build_equations(endo_no = endo_number, endo_sp = endo_species, dems = demographics)
 
   ## importing the model function details ##
 
@@ -69,7 +70,7 @@ run_model <- function(endo_number = 2,
     ini_state <- dplyr::case_when(
       names(ini_state) == "N00" ~  kmax,
       names(ini_state) == "N01"  ~  0,
-      names(ini_state) == "N10"  ~ 1
+      names(ini_state) == "N10"  ~ 0
     )
  }
 
