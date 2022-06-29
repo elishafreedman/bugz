@@ -4,7 +4,7 @@
 #' @param dems :
 #' @param K : carrying capacity of number of host species within the system.
 #' @param lambda : host speciation rate
-#' @param mu : loss rate  of host spcies
+#' @param mu : loss rate  of host species
 #' @param betaA :  transmission rate of species A
 #' @param betaB : transmission rate of species B
 #' @param sigmaA : priority effects of species A
