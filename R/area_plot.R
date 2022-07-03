@@ -9,7 +9,8 @@ area_plot  <- function(data = NULL ,
                        line_type = 1,
                        legend_pos = "NULL",
                        defaults = c(sigmaA == 0.05 & nuA == 0.005),
-                       xbreaks = NULL){
+                       xbreaks = NULL,
+                       titles = NULL){
   model_det <- data[["simulation_details"]]
   all_results <- data[["simulations"]]
 
@@ -19,9 +20,9 @@ area_plot  <- function(data = NULL ,
   colours <- c("black", colours)
 
 
-   defaults <- enquo(defaults)
+   defaults <- dplyr::enquo(defaults)
 
-   xbreaks <- enquo(xbreaks)
+   xbreaks <- dplyr::enquo(xbreaks)
 
   col <- Reorder(res = all_results, mod_det = model_det)
 
@@ -32,7 +33,7 @@ area_plot  <- function(data = NULL ,
   if(model_det$endo_species == 1){
     col_labs <- gsub('.{1}$', '', col_labs)
   }
- all_res <-  all_results %>% filter(!!defaults)
+ all_res <-  all_results %>% dplyr::filter(!!defaults)
 
 
 datasum <- all_res %>% pivot_longer(all_of(col)) %>% group_by(.data[[ind_var]]) %>% summarise(sum = sum(value))
@@ -54,16 +55,19 @@ data2 %>% pivot_longer(all_of(col)) %>% mutate(name = forcats::fct_relevel(name,
   theme(axis.text = element_text(size = 12),
         axis.title = element_text(size = 15),
         axis.title.y = element_text(angle = 90, size = 15),
-        legend.position = legend_pos) +
+        plot.title = element_text(color="Black", size=20, face="bold"),
+                                  plot.margin = margin(0.7, 0.7, 0.7, 0.7, "cm"),
+        legend.position = legend_pos,
+        legend.title = element_text(size=15))+
   ylab(label = y_labs) +
   xlab(label = x_labs)+
-    labs(fill = legend_labs)
-
+  labs(fill = legend_labs)+
+  ggtitle(titles)
 }
 
 #combine plots
 
-plot_comb <- lapply(list("betaA", "sigmaA", "nuA"), function(x){ area_plot( ) })
+
 
 mult_graphs_no_dem <- ggpubr::ggarrange(plots = plot_comb,
                                         labels = c("A", "B", "C", "D", "E", "F"), ncol = 2, nrow = 3, common.legend = TRUE, legend = "right")
