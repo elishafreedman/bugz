@@ -11,6 +11,7 @@ area_plot  <- function(data = NULL ,
                        legend_pos = "NULL",
                        defaults = c(sigmaA == 0.05 & nuA == 0.005),
                        xbreaks = NULL,
+                       ybreaks = NULL,
                        titles = NULL,
                        other_param_plot = NULL,
                        other_line_colour = NULL
@@ -49,7 +50,7 @@ datasum <- all_res %>% pivot_longer(all_of(col)) %>% group_by(.data[[ind_var]]) 
 data2 %>% pivot_longer(all_of(col)) %>% mutate(name = forcats::fct_relevel(name, all_of(col)))%>% ggplot(aes(x = .data[[ind_var]], y = value/sum, fill = name))+
     geom_area(size = 0.5, color = "black")+
     scale_fill_manual(values = colours, labels = col_labs) +
-    scale_y_continuous(expand = c(0, 0), breaks = seq(0, 1, 0.1))+
+    scale_y_continuous(expand = c(0, 0), breaks = ybreaks)+
     scale_x_continuous(expand = c(0, 0),
                        breaks = xbreaks) +
     geom_vline(xintercept = def_param_plot,
@@ -59,15 +60,16 @@ data2 %>% pivot_longer(all_of(col)) %>% mutate(name = forcats::fct_relevel(name,
              linetype = line_type,
              colour = other_line_colour, size = 1)+
   theme_bw()+
-  theme(axis.text = element_text(size = 12),
-        axis.title = element_text(size = 12),
-        axis.title.y = element_text(angle = 90, size = 12),
+  theme(axis.text = element_text(size = 15),
+        axis.title = element_text(size = 15),
+        axis.title.y = element_text(angle = 90, size = 15),
+        axis.title.x = element_text(size = 20),
         plot.title = element_text(color="Black", size=12, face="bold"),
                                   plot.margin = margin(0.7, 0.7, 0.7, 0.7, "cm"),
         legend.position = legend_pos,
-        legend.title = element_text(size=12),
-        plot.tag = element_text(size = 15, face = "bold"),
-        plot.tag.position = c(0.85, 0.05))+
+        legend.title = element_text(size=15),
+        plot.tag = element_text(size = 12, face = "bold"),
+        plot.tag.position = c(0.85, 0.05), legend.key.size = unit(1, 'cm'), legend.text = element_text(size = 15))+
   ylab(label = y_labs) +
   xlab(label = x_labs)+
   labs(fill = legend_labs, tag = tags)+
