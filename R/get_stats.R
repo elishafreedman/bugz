@@ -58,9 +58,9 @@ get_stats <- function(results_file = ODE_eq,
 
   test_sans_param <- to_test[, grep("^[^slnbtKm]*$", colnames(to_test))]
 
-  prop_data <- rowSums(test_sans_param)
+  prop_data <- data.frame(rowSums(test_sans_param))
   for(i in 1:length(prop_data)){
-    fin_data <- apply(test_sans_param, c(1,2), function(x) x/prop_data[i])
+    fin_data <- apply(test_sans_param, c(1,2), function(x) x/prop_data[i,])
   }
   fin_data <- as.data.frame(fin_data)
   # proportion of all coinfected
@@ -147,27 +147,28 @@ get_stats <- function(results_file = ODE_eq,
                  B,
                  A_plus,
                  B_plus){
-    D <-coinf * N0 - sum(A, A_plus) * sum(B, B_plus)
+    D <-coinf*N0 - sum(A, A_plus) * sum(B, B_plus)
 
     #D prime
 
-    if(D > 0){
-      Dmin <- min(sum(A, A_plus,coinf) * (1-sum(B, B_plus, coinf)),
-                  (1- sum(A, A_plus, coinf)) * sum(B, B_plus, coinf))
-      Dp <- D/Dmin
+if(D > 0){
+  Dmin <- min(sum(A, A_plus, coinf) * (1-sum(B, B_plus, coinf)),
+              (1- sum(A, A_plus, coinf)) * sum(B, B_plus, coinf))
+  Dp <- D/Dmin
 
-    }else{
-      Dmax <-  max(-(sum(A, A_plus, coinf) * sum(B, B_plus, coinf)),
-                   -(1-sum(A, A_plus, coinf)) * (1-sum(B, B_plus, coinf)))
-      Dp <- D/Dmax
-    }
+}else{
+  Dmax <-  max(-(sum(A, A_plus, coinf) * sum(B, B_plus, coinf)),
+               -(1-sum(A, A_plus, coinf)) * (1-sum(B, B_plus, coinf)))
+  Dp <- D/Dmax
+}
+
 
     #r2
     r <- D^2/sum(A, A_plus)*(1-sum(A, A_plus)) *
       sum(B, B_plus) * (1-sum(B, B_plus))
 
     #phi coefficient
-    ph <- coinf*N0-sum(A, A_plus) * sum(B, B_plus)/sqrt(sum(coinf, sum(A, A_plus))*
+    ph <- coinf*N0-sum(A, A_plus) * sum(B, B_plus, coinf)/sqrt(sum(coinf, sum(A, A_plus))*
                                                           sum(sum(B, B_plus), N0)*
                                                           sum(sum(A, A_plus), N0)*
                                                           sum(coinf, sum(B, B_plus)))
