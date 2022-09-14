@@ -78,7 +78,5 @@ data2 %>% pivot_longer(all_of(col)) %>% mutate(name = forcats::fct_relevel(name,
 
 #combine plots
 
-
-
 mult_graphs_no_dem <- ggpubr::ggarrange(plots = plot_comb,
                                         labels = c("A", "B", "C", "D", "E", "F"), ncol = 2, nrow = 3, common.legend = TRUE, legend = "right")
