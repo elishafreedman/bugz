@@ -11,9 +11,7 @@
 
 plot_model <- function(results_file = ODE_results,
                        plot_file = "ODE_Plot.pdf",
-                       Colors = c("blue", "orange", "red"),
-                       ylabel = "Proportion infected",
-                       xlabel = "Timesteps") {
+                       Colors = c("blue", "orange", "red")) {
   model_det <- results_file[["simulation_details"]]
   parameters <- results_file[["param_combos"]]
   all_results <- results_file[["simulations"]]
@@ -57,7 +55,7 @@ plot_model <- function(results_file = ODE_results,
 
     col <- Reorder(res = all_results, mod_det = model_det)
     col_labs <- gsub("\\N","",col)
-    col_labs <- gsub("([1:100])", "\\1 \\2", col_labs)
+
 
     initial_plot <-
       tidyr::pivot_longer(i$Results, all_of(col), names_to = "infection_status")
@@ -74,9 +72,9 @@ plot_model <- function(results_file = ODE_results,
           ),
           size = 1.5
         ) +
-        ylab(label = ylabel) +
-        xlab(label = xlabel) +
-        labs(colour = "infection status \n         A B") +
+        ylab(label = "# Host species") +
+        xlab(label = "Timesteps") +
+        labs(colour = "infection status \n         A  B") +
         scale_colour_manual(values = c("black",  cols),labels =  col_labs) +
         theme_classic() +
         theme(axis.text = element_text(size = 20)) +
