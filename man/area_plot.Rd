@@ -2,7 +2,7 @@
 % Please edit documentation in R/area_plot.R
 \name{area_plot}
 \alias{area_plot}
-\title{Add together two numbers}
+\title{Create stacked area plots of bugz simulation data}
 \usage{
 area_plot(
   data = NULL,
@@ -60,5 +60,5 @@ area_plot(
 a 100% stacked area plot of results
 }
 \description{
-Add together two numbers
+Create stacked area plots of bugz simulation data
 }

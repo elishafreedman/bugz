@@ -1,4 +1,4 @@
-#' Add together two numbers
+#' Create stacked area plots of bugz simulation data
 #'
 #' @param data dataset
 #' @param x_labs Label for x axis
@@ -61,13 +61,13 @@ area_plot  <- function(data = NULL ,
 
 
   datasum <-
-    all_res %>% pivot_longer(all_of(col)) %>% group_by(.data[[ind_var]]) %>% summarise(sum = sum(value))
+    all_res %>% tidyr::pivot_longer(all_of(col)) %>% group_by(.data[[ind_var]]) %>% summarise(sum = sum(value))
 
 
   data2 <- cbind(all_res, sum = datasum$sum)
 
 
-  data2 %>% pivot_longer(all_of(col)) %>% mutate(name = forcats::fct_relevel(name, all_of(col))) %>% ggplot(aes(x = .data[[ind_var]], y = value /
+  data2 %>% tidyr::pivot_longer(all_of(col)) %>% mutate(name = forcats::fct_relevel(name, all_of(col))) %>% ggplot(aes(x = .data[[ind_var]], y = value /
                                                                                                                   sum, fill = name)) +
     geom_area(size = 0.5, color = "black") +
     scale_fill_manual(values = colours, labels = col_labs) +

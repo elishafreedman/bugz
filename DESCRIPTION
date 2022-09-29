@@ -13,6 +13,7 @@ Imports: shiny,
         deSolve,
         tidyr,
         dplyr,
+        forcats,
         stats, 
         grDevices,
         utils
