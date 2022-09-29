@@ -1,92 +1,117 @@
-#'Plot model
+#' reate  area plots for simulations generated in "bugz"
 #'
-#' @param results_file : results
-#' @param plot_file : file name to save plots
-#' @param Colors :  vector of colours to be included in the graph
-#' @return PDF of plots of results over time steps
+#' @param data dataset
+#' @param y_labs Label for y axis
+#' @param Legend_labs Label for legend
+#' @param ind_var desired independent variable
+#' @param def_param_plot default parameters to plot
+#' @param colouring vector for the colour gradient desired in the plot
+#' @param def_line_colour the colour of the line representing the default parameter
+#' @param line_type line type of default parameter
+#' @param legend_pos legend position
+#' @param defaults the default parameter values for the dataset
+#' @param xbreaks the breaks for the tick marks and number on y axis
+#' @param ybreaks the breaks for the tick marks and numbers on the x axis
+#' @param titles title for the graph
+#' @param second_def_line to add another line displaying a second default parameter to the plot
+#' @param second_line_colour colour for this second default parameter line
+#' @return a 100% stacked area plot of results
 #' @import ggplot2
+#' @import tidyr
+#' @import dplyr
+#' @import forcats
+#' @examples
 #' @export
-#'
-#' @examples plot_model(results_file = ODE_results, plot_file = "ODE_Plot.pdf", Colors = c("blue","orange", "red"))
 
-plot_model <- function(results_file = ODE_results,
-                       plot_file = "ODE_Plot.pdf",
-                       Colors = c("blue", "orange", "red")) {
-  model_det <- results_file[["simulation_details"]]
-  parameters <- results_file[["param_combos"]]
-  all_results <- results_file[["simulations"]]
-  if (model_det$endo_species == 2) {
-    k <- (model_det$endo_species + 1) ^ (model_det$endo_no_per_sp) - 1
-    cols <-  grDevices::colorRampPalette(c(Colors))(k)
-  } else{
-    k <- (model_det$endo_species + 1) ^ (model_det$endo_no_per_sp) - 1
-    cols <-  grDevices::colorRampPalette(c(Colors))(k)
+plot_model<- function(data = NULL ,
+                       x_labs = expression(paste(sigma[A])),
+                       y_labs = "% infected",
+                       legend_labs = "Infection\n status \n       AB",
+                       ind_var =  "betaA",
+                       def_param_plot = NULL,
+                       colouring = c("dodgerblue4", "darkcyan", "cadetblue1"),
+                       def_line_colour = "grey",
+                       line_type = 1,
+                       legend_pos = "NULL",
+                       defaults = c(sigmaA == 0 & nuA == 0.005),
+                       xbreaks = NULL,
+                       ybreaks = NULL,
+                       titles = NULL,
+                       second_def_line = NULL,
+                       second_line_colour= NULL) {
+  model_det <- data[["simulation_details"]]
+  all_results <- data[["simulations"]]
+
+  k <- (model_det$endo_no_per_sp + 1) ^ (model_det$endo_species)
+  colours <- colorRampPalette(colouring)((k))
+
+  colours <- c("black", colours)
+
+  defaults <- dplyr::enquo(defaults)
+
+  xbreaks <- dplyr::enquo(xbreaks)
+
+  col <- Reorder(res = all_results, mod_det = model_det)
+
+
+
+
+  col_labs <- gsub("\\N", "", col)
+  if (model_det$endo_species == 1) {
+    col_labs <- gsub('.{1}$', '', col_labs)
   }
-  pdf(file = plot_file)
-  for (i in 1:nrow(all_results)) {
-    title <-
-      bquote("Number of individuals carrying parasites over time")
-    if (model_det$endo_species == 2) {
-      subtit <- bquote(
-        list(
-          K == . (all_results[i, ]$K),
-          lambda == . (all_results[i, ]$lambda),
-          mu == .(all_results[i, ]$mu),
-          beta[A] == .(all_results[i, ]$betAa),
-          beta[B] == .(all_results[i, ]$betaB),
-          sigma[A] == .(all_results[i, ]$sigmaA),
-          sigma[B] == .(all_results[i, ]$sigmaB),
-          sigma[AB] == .(all_results[i, ]$sigmaAB),
-          sigma[BA] == .(all_results[i, ]$betaBA),
-          nu[A] == .(all_results[i, ]$nuA),
-          nu[B] == .(all_results[i, ]$nuB)
-        )
-      )
-    } else{
-      subtit <- bquote(list(
-        K == . (all_results[i, ]$K),
-        lambda == . (all_results[i, ]$lambda),
-        mu == .(all_results[i, ]$mu),
-        beta[A] == .(all_results[i, ]$betaA),
-        sigma[A] == .(all_results[i, ]$sigmaA),
-        nu[A] == .(all_results[i, ]$nuA)
-      ))
-    }
-
-    col <- Reorder(res = all_results, mod_det = model_det)
-    col_labs <- gsub("\\N","",col)
+  all_res <-  all_results %>% dplyr::filter(!!defaults)
 
 
-    initial_plot <-
-      tidyr::pivot_longer(i$Results, all_of(col), names_to = "infection_status")
-    initial_plot$infection_status <-
-      factor(initial_plot$infection_status, levels = col)
-    print(
-      ggplot(initial_plot) +
-        geom_line(
-          aes(
-            x = time,
-            y = value,
-            colour = infection_status,
-            group = infection_status
-          ),
-          size = 1.5
-        ) +
-        ylab(label = "# Host species") +
-        xlab(label = "Timesteps") +
-        labs(colour = "infection status \n         A  B") +
-        scale_colour_manual(values = c("black",  cols),labels =  col_labs) +
-        theme_classic() +
-        theme(axis.text = element_text(size = 20)) +
-        theme(axis.title = element_text(size = 20)) +
-        theme(legend.text = element_text(size = 20)) +
-        theme(legend.key.size = unit(3, "lines")) +
-        theme(legend.title = element_text(size = 20)) +
-        ggtitle(bquote(atop(
-          bold(.(title)), atop(bold(.(subtit)))
-        )))
-    )
-  }
-  while (!is.null(dev.list()))
-    dev.off()
+  datasum <-
+    all_res %>% tidyr::pivot_longer(all_of(col)) %>% group_by(.data[[ind_var]]) %>% summarise(sum = sum(value))
+
+
+  data2 <- cbind(all_res, sum = datasum$sum)
+
+
+  data2 %>% tidyr::pivot_longer(all_of(col)) %>% mutate(name = forcats::fct_relevel(name, all_of(col))) %>% ggplot(aes(x = .data[[ind_var]], y = value /
+                                                                                                                  sum, fill = name))+
+
+     geom_area(size = 0.5, color = "black")+
+    scale_fill_manual(values = colours, labels = col_labs)+
+    scale_y_continuous(expand = c(0, 0), breaks = ybreaks) +
+    scale_x_continuous(expand = c(0, 0),
+                       breaks = xbreaks) +
+    geom_vline(
+      xintercept = def_param_plot,
+      linetype = line_type,
+      colour = def_line_colour,
+      size = 1
+    ) +
+    geom_vline(
+      xintercept = second_def_line,
+      linetype = line_type,
+      colour = second_line_colour,
+      size = 1
+    ) +
+    theme_bw() +
+    theme(
+      axis.text = element_text(size = 15),
+      axis.title = element_text(size = 15),
+      axis.title.y = element_text(angle = 90, size = 15),
+      axis.title.x = element_text(size = 20),
+      plot.title = element_text(
+        color = "Black",
+        size = 12,
+        face = "bold"
+      ),
+      plot.margin = margin(0.7, 0.7, 0.7, 0.7, "cm"),
+      legend.position = legend_pos,
+      legend.title = element_text(size = 15),
+      plot.tag = element_text(size = 12, face = "bold"),
+      plot.tag.position = c(0.85, 0.05),
+      legend.key.size = unit(1, 'cm'),
+      legend.text = element_text(size = 15)
+    ) +
+    ylab(label = y_labs) +
+    xlab(label = x_labs) +
+    labs(fill = legend_labs) +
+    ggtitle(titles)
 }
+

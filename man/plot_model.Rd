@@ -2,27 +2,61 @@
 % Please edit documentation in R/plot_model.R
 \name{plot_model}
 \alias{plot_model}
-\title{Plot model}
+\title{reate  area plots for simulations generated in "bugz"}
 \usage{
 plot_model(
-  results_file = ODE_results,
-  plot_file = "ODE_Plot.pdf",
-  Colors = c("blue", "orange", "red")
+  data = NULL,
+  x_labs = expression(paste(sigma[A])),
+  y_labs = "\% infected",
+  legend_labs = "Infection\\n status \\n       AB",
+  ind_var = "betaA",
+  def_param_plot = NULL,
+  colouring = c("dodgerblue4", "darkcyan", "cadetblue1"),
+  def_line_colour = "grey",
+  line_type = 1,
+  legend_pos = "NULL",
+  defaults = c(sigmaA == 0 & nuA == 0.005),
+  xbreaks = NULL,
+  ybreaks = NULL,
+  titles = NULL,
+  second_def_line = NULL,
+  second_line_colour = NULL
 )
 }
 \arguments{
-\item{results_file}{: results}
+\item{data}{dataset}
 
-\item{plot_file}{: file name to save plots}
+\item{y_labs}{Label for y axis}
 
-\item{Colors}{:  vector of colours to be included in the graph}
+\item{ind_var}{desired independent variable}
+
+\item{def_param_plot}{default parameters to plot}
+
+\item{colouring}{vector for the colour gradient desired in the plot}
+
+\item{def_line_colour}{the colour of the line representing the default parameter}
+
+\item{line_type}{line type of default parameter}
+
+\item{legend_pos}{legend position}
+
+\item{defaults}{the default parameter values for the dataset}
+
+\item{xbreaks}{the breaks for the tick marks and number on y axis}
+
+\item{ybreaks}{the breaks for the tick marks and numbers on the x axis}
+
+\item{titles}{title for the graph}
+
+\item{second_def_line}{to add another line displaying a second default parameter to the plot}
+
+\item{second_line_colour}{colour for this second default parameter line}
+
+\item{Legend_labs}{Label for legend}
 }
 \value{
-PDF of plots of results over time steps
+a 100% stacked area plot of results
 }
 \description{
-Plot model
-}
-\examples{
-plot_model(results_file = ODE_results, plot_file = "ODE_Plot.pdf", Colors = c("blue","orange", "red"))
+reate  area plots for simulations generated in "bugz"
 }
