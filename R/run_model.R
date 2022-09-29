@@ -26,7 +26,7 @@ run_model <- function(endo_number = 2,
                       kmax = NA) {
   #Build the equations
 
-  ODE <- build_equations(endo_no = endo_number)
+  ODE <- build_equations(endo_no = endo_number, endo_sp = endo_species)
 
   ## importing the model function details ##
 
@@ -43,7 +43,8 @@ run_model <- function(endo_number = 2,
     simulation_ran = Sys.time(),
     endo_species = endo_species,
     endo_no_per_sp = endo_number,
-    max_timesteps = tmax
+    max_timesteps = tmax,
+    eq_threshold = eq_threshold
   )
 
   times <- seq(0, tmax, 1)
@@ -86,6 +87,7 @@ run_model <- function(endo_number = 2,
 
   }
 
+  eq_raw <- data.frame()
   ode_calc <- function(x) {
     Res <- data.frame(deSolve::ode(ini_state, times, eqn, x))
     for (k in 1:(nrow(Res) - 1)) {
@@ -128,7 +130,6 @@ run_model <- function(endo_number = 2,
   sims <- plyr::ldply(sims, rbind, .id = NULL)
 
   parallel::stopCluster(clust)
-
 
   return(
     list(
