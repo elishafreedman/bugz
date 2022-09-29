@@ -26,7 +26,7 @@ run_model <- function(endo_number = 2,
                       kmax = NA) {
   #Build the equations
 
-  ODE <- build_equations(endo_no = endo_number, endo_sp = endo_species, dems = demographics)
+  ODE <- build_equations(endo_no = endo_number, endo_sp = endo_species)
 
   ## importing the model function details ##
 

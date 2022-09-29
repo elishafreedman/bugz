@@ -23,7 +23,7 @@ set_parameters(
 
 \item{lambda}{: host speciation rate}
 
-\item{mu}{: loss rate  of host spcies}
+\item{mu}{: loss rate  of host species}
 
 \item{betaA}{:  transmission rate of species A}
 

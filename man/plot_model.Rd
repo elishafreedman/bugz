@@ -18,7 +18,7 @@ plot_model(
 \item{Colors}{:  vector of colours to be included in the graph}
 }
 \value{
-PDF of plots of results over timesteps
+PDF of plots of results over time steps
 }
 \description{
 Plot model
