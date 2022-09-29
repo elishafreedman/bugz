@@ -10,7 +10,9 @@ shiny_endo_plot(
   endo_number = 1,
   tmax = 2500,
   kmax = NA,
-  Colors = c("blue", "orange", "red")
+  Colors = c("blue", "orange", "red"),
+  ylabel = "Proportion infected",
+  xlabel = "Timesteps"
 )
 }
 \arguments{
