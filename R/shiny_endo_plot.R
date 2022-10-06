@@ -5,7 +5,7 @@
 #' @param endo_number : number of individuals per species
 #' @param tmax : max number of timesteps
 #' @param host_dem : if TRUE, host demographics (speciation, and extinction) will be included in the simulation.
-#' @param Colors :  vector of colours to be included in the graph
+#' @param colours :  vector of colours to be included in the graph
 #' @return A shiny application line graph of number of hosts with intracellular endosymbionts within the system at each timestep at each parameter combination.
 #' @export
 #' @import shiny
@@ -17,7 +17,7 @@ shiny_endo_plot <- function(parameters = params,
                             endo_number = 1,
                             tmax = 2500,
                             kmax = NA,
-                            Colors = c("blue", "orange", "red"),
+                            colours = c("blue", "orange", "red"),
                             ylabel = "Proportion infected",
                             xlabel = "Timesteps") {
   model_det <-

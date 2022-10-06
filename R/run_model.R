@@ -12,8 +12,8 @@
 #' @export
 #'
 #' @examples
-#' params <- set_parameters(K = 200,lambda = 1,mu = 0.5,betaA =0.001,betaB = 0.001,sigmaA = 0.1,sigmaB = 0.1,sigmaAB = 1,sigmaBA = seq(0, 1, 0.1),nuA = 0.01,nuB = 0.01)
-#' run_model(endo_species = 2,endo_number = 2,parameters = params,tmax = 1000,core_spec = NA, outfile = "ODE_results.rda")
+#' params <- set_parameters(K = 200,lambda = 1,mu = 0.5,betaA =0.001,betaB = 0.001,sigmaA = 0.1, sigmaB = 0.1, sigmaAB = 1, sigmaBA = seq(0, 1, 0.1),nuA = 0.01,nuB = 0.01)
+#' run_model(endo_species = 2, endo_number = 2,parameters = params,tmax = 1000,core_spec = NA)
 
 
 
@@ -92,8 +92,8 @@ run_model <- function(endo_number = 2,
     Res <- data.frame(deSolve::ode(ini_state, times, eqn, x))
     for (k in 1:(nrow(Res) - 1)) {
       eq <- as.matrix(Res[k:(k + 1),])
-      VarC <- apply(eq[, -1], 2, FUN = isEqui)
-      if (all(VarC) == TRUE) {
+      VarC <- isEqui(eq[,-1])
+      if(VarC == TRUE){
         eq_raw <- data.frame(c(x, Res[k + 1, ]))
         break
       }
