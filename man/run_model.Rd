@@ -36,6 +36,6 @@ and a list of model results for each parameter combination.
 run_model
 }
 \examples{
-params <- set_parameters(K = 200,lambda = 1,mu = 0.5,betaA =0.001,betaB = 0.001,sigmaA = 0.1,sigmaB = 0.1,sigmaAB = 1,sigmaBA = seq(0, 1, 0.1),nuA = 0.01,nuB = 0.01)
-run_model(endo_species = 2,endo_number = 2,parameters = params,tmax = 1000,core_spec = NA, outfile = "ODE_results.rda")
+params <- set_parameters(K = 200,lambda = 1,mu = 0.5,betaA =0.001,betaB = 0.001,sigmaA = 0.1, sigmaB = 0.1, sigmaAB = 1, sigmaBA = seq(0, 1, 0.1),nuA = 0.01,nuB = 0.01)
+run_model(endo_species = 2, endo_number = 2,parameters = params,tmax = 1000,core_spec = NA)
 }

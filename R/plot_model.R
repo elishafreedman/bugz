@@ -1,4 +1,4 @@
-#' reate  area plots for simulations generated in "bugz"
+#' Create  area plots for simulations generated in "bugz"
 #'
 #' @param data dataset
 #' @param y_labs Label for y axis
@@ -23,6 +23,7 @@
 #' @examples
 #' @export
 
+
 plot_model<- function(data = NULL ,
                        x_labs = expression(paste(sigma[A])),
                        y_labs = "% infected",
@@ -30,6 +31,7 @@ plot_model<- function(data = NULL ,
                        ind_var =  "betaA",
                        def_param_plot = NULL,
                        colouring = c("dodgerblue4", "darkcyan", "cadetblue1"),
+                       uninfected_colour = "white",
                        def_line_colour = "grey",
                        line_type = 1,
                        legend_pos = "NULL",
@@ -38,42 +40,50 @@ plot_model<- function(data = NULL ,
                        ybreaks = NULL,
                        titles = NULL,
                        second_def_line = NULL,
-                       second_line_colour= NULL) {
+                       second_line_colour= NULL,
+                      tags  = NULL,
+                      tag_pos = NULL) {
   model_det <- data[["simulation_details"]]
   all_results <- data[["simulations"]]
 
   k <- (model_det$endo_no_per_sp + 1) ^ (model_det$endo_species)
   colours <- colorRampPalette(colouring)((k))
 
-  colours <- c("black", colours)
+  colours <- c(uninfected_colour, colours)
 
   defaults <- dplyr::enquo(defaults)
 
   xbreaks <- dplyr::enquo(xbreaks)
+  #get rid of unnecessary columns and reorder
 
-  col <- Reorder(res = all_results, mod_det = model_det)
-
-
-
-
-  col_labs <- gsub("\\N", "", col)
-  if (model_det$endo_species == 1) {
-    col_labs <- gsub('.{1}$', '', col_labs)
-  }
   all_res <-  all_results %>% dplyr::filter(!!defaults)
 
+  if(all(all_res$sigmaAB==0) & all(all_res$sigmaBA==0)
+     & model_det$endo_species == 2){
+    col <- c("N00", "N10", "N11", "N01")
+    col_keep <- c(colnames(data[["param_combos"]]), col)
+    subset(all_res, colnames(all_res)==col_keep)
+    col_labs <- c("0 0", "1 0", "1 1", "0 1")
 
+  } else {
+   col <- Reorder(res = all_results, mod_det = model_det)
+  }
+
+
+col_labs <- gsub("\\N", "", col)
+if (model_det$endo_species == 1) {
+  col_labs <- gsub('.{1}$', '', col_labs)
+}
   datasum <-
     all_res %>% tidyr::pivot_longer(all_of(col)) %>% group_by(.data[[ind_var]]) %>% summarise(sum = sum(value))
 
 
   data2 <- cbind(all_res, sum = datasum$sum)
 
-
   data2 %>% tidyr::pivot_longer(all_of(col)) %>% mutate(name = forcats::fct_relevel(name, all_of(col))) %>% ggplot(aes(x = .data[[ind_var]], y = value /
                                                                                                                   sum, fill = name))+
 
-     geom_area(size = 0.5, color = "black")+
+    geom_area(size = 0.5, color = "black")+
     scale_fill_manual(values = colours, labels = col_labs)+
     scale_y_continuous(expand = c(0, 0), breaks = ybreaks) +
     scale_x_continuous(expand = c(0, 0),
@@ -105,13 +115,13 @@ plot_model<- function(data = NULL ,
       legend.position = legend_pos,
       legend.title = element_text(size = 15),
       plot.tag = element_text(size = 12, face = "bold"),
-      plot.tag.position = c(0.85, 0.05),
+      plot.tag.position = tag_pos,
       legend.key.size = unit(1, 'cm'),
       legend.text = element_text(size = 15)
     ) +
     ylab(label = y_labs) +
     xlab(label = x_labs) +
-    labs(fill = legend_labs) +
+    labs(fill = legend_labs, tag = tags) +
     ggtitle(titles)
 }
 

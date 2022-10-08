@@ -10,7 +10,7 @@ shiny_endo_plot(
   endo_number = 1,
   tmax = 2500,
   kmax = NA,
-  Colors = c("blue", "orange", "red"),
+  colours = c("blue", "orange", "red"),
   ylabel = "Proportion infected",
   xlabel = "Timesteps"
 )
@@ -24,7 +24,7 @@ shiny_endo_plot(
 
 \item{tmax}{: max number of timesteps}
 
-\item{Colors}{:  vector of colours to be included in the graph}
+\item{colours}{:  vector of colours to be included in the graph}
 
 \item{host_dem}{: if TRUE, host demographics (speciation, and extinction) will be included in the simulation.}
 }

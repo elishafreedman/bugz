@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_model.R
 \name{plot_model}
 \alias{plot_model}
-\title{reate  area plots for simulations generated in "bugz"}
+\title{Create  area plots for simulations generated in "bugz"}
 \usage{
 plot_model(
   data = NULL,
@@ -12,6 +12,7 @@ plot_model(
   ind_var = "betaA",
   def_param_plot = NULL,
   colouring = c("dodgerblue4", "darkcyan", "cadetblue1"),
+  uninfected_colour = "white",
   def_line_colour = "grey",
   line_type = 1,
   legend_pos = "NULL",
@@ -20,7 +21,9 @@ plot_model(
   ybreaks = NULL,
   titles = NULL,
   second_def_line = NULL,
-  second_line_colour = NULL
+  second_line_colour = NULL,
+  tags = NULL,
+  tag_pos = NULL
 )
 }
 \arguments{
@@ -58,5 +61,5 @@ plot_model(
 a 100% stacked area plot of results
 }
 \description{
-reate  area plots for simulations generated in "bugz"
+Create  area plots for simulations generated in "bugz"
 }

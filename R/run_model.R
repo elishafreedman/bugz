@@ -15,15 +15,13 @@
 #' params <- set_parameters(K = 200,lambda = 1,mu = 0.5,betaA =0.001,betaB = 0.001,sigmaA = 0.1, sigmaB = 0.1, sigmaAB = 1, sigmaBA = seq(0, 1, 0.1),nuA = 0.01,nuB = 0.01)
 #' run_model(endo_species = 2, endo_number = 2,parameters = params,tmax = 1000,core_spec = NA)
 
-
-
 run_model <- function(endo_number = 2,
-                      endo_species = 2,
-                      parameters = params,
-                      tmax = 1000,
-                      eq_threshold = 0.1,
-                      core_spec = NA,
-                      kmax = NA) {
+         endo_species = 2,
+         parameters = params,
+         tmax = 1000,
+         eq_threshold = 0.1,
+         core_spec = NA,
+         kmax = NA) {
   #Build the equations
 
   ODE <- build_equations(endo_no = endo_number, endo_sp = endo_species)
@@ -55,7 +53,7 @@ run_model <- function(endo_number = 2,
 
   # create initial states vector #
 
- if(endo_species == 2){
+  if(endo_species == 2){
     ini_state <- c(rep(0, length(ins)))
     names(ini_state) <- c(ins)
     ini_state <- dplyr::case_when(
@@ -63,15 +61,15 @@ run_model <- function(endo_number = 2,
       names(ini_state) == "N01"  ~  1,
       names(ini_state) == "N10"  ~ 1
     )
- } else if(endo_species == 1){
+  } else if(endo_species == 1){
     ini_state <- c(rep(0, length(ins)))
     names(ini_state) <- c(ins)
     ini_state <- dplyr::case_when(
       names(ini_state) == "N00" ~  kmax,
       names(ini_state) == "N01"  ~  0,
-      names(ini_state) == "N10"  ~ 0
+      names(ini_state) == "N10"  ~ 1
     )
- }
+  }
 
   ini_state[is.na(ini_state)] <-  0
   names(ini_state) <- c(ins)
@@ -92,8 +90,8 @@ run_model <- function(endo_number = 2,
     Res <- data.frame(deSolve::ode(ini_state, times, eqn, x))
     for (k in 1:(nrow(Res) - 1)) {
       eq <- as.matrix(Res[k:(k + 1),])
-      VarC <- isEqui(eq[,-1])
-      if(VarC == TRUE){
+      VarC <- isEqui(eq[, -1])
+      if (VarC == TRUE) {
         eq_raw <- data.frame(c(x, Res[k + 1, ]))
         break
       }
@@ -140,3 +138,5 @@ run_model <- function(endo_number = 2,
   )
   print(paste("simulatione end time", Sys.time()))
 }
+
+
