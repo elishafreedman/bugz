@@ -12,6 +12,7 @@ plot_model(
   ind_var = "betaA",
   def_param_plot = NULL,
   colouring = c("dodgerblue4", "darkcyan", "cadetblue1"),
+  alpha = 1,
   uninfected_colour = "white",
   def_line_colour = "grey",
   line_type = 1,

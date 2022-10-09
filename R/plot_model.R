@@ -15,6 +15,7 @@
 #' @param titles title for the graph
 #' @param second_def_line to add another line displaying a second default parameter to the plot
 #' @param second_line_colour colour for this second default parameter line
+#' @param tags
 #' @return a 100% stacked area plot of results
 #' @import ggplot2
 #' @import tidyr
@@ -31,6 +32,7 @@ plot_model<- function(data = NULL ,
                        ind_var =  "betaA",
                        def_param_plot = NULL,
                        colouring = c("dodgerblue4", "darkcyan", "cadetblue1"),
+                       alpha = 1,
                        uninfected_colour = "white",
                        def_line_colour = "grey",
                        line_type = 1,
@@ -83,7 +85,7 @@ if (model_det$endo_species == 1) {
   data2 %>% tidyr::pivot_longer(all_of(col)) %>% mutate(name = forcats::fct_relevel(name, all_of(col))) %>% ggplot(aes(x = .data[[ind_var]], y = value /
                                                                                                                   sum, fill = name))+
 
-    geom_area(size = 0.5, color = "black")+
+    geom_area(size = 0.5, colour = "black", alpha = alpha)+
     scale_fill_manual(values = colours, labels = col_labs)+
     scale_y_continuous(expand = c(0, 0), breaks = ybreaks) +
     scale_x_continuous(expand = c(0, 0),
@@ -109,7 +111,7 @@ if (model_det$endo_species == 1) {
       plot.title = element_text(
         color = "Black",
         size = 12,
-        face = "bold"
+        face = "bold" ,
       ),
       plot.margin = margin(0.7, 0.7, 0.7, 0.7, "cm"),
       legend.position = legend_pos,
@@ -117,7 +119,8 @@ if (model_det$endo_species == 1) {
       plot.tag = element_text(size = 12, face = "bold"),
       plot.tag.position = tag_pos,
       legend.key.size = unit(1, 'cm'),
-      legend.text = element_text(size = 15)
+      legend.text = element_text(size = 15),
+      panel.grid = element_blank()
     ) +
     ylab(label = y_labs) +
     xlab(label = x_labs) +
