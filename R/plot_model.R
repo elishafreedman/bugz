@@ -53,23 +53,13 @@ plot_model<- function(data = NULL ,
 
   colours <- c(uninfected_colour, colours)
 
-  defaults <- dplyr::enquo(defaults)
-
   xbreaks <- dplyr::enquo(xbreaks)
-  #get rid of unnecessary columns and reorder
+
+  defaults <- dplyr::enquo(defaults)
 
   all_res <-  all_results %>% dplyr::filter(!!defaults)
 
-  if(all(all_res$sigmaAB==0) & all(all_res$sigmaBA==0)
-     & model_det$endo_species == 2){
-    col <- c("N00", "N10", "N11", "N01")
-    col_keep <- c(colnames(data[["param_combos"]]), col)
-    subset(all_res, colnames(all_res)==col_keep)
-    col_labs <- c("0 0", "1 0", "1 1", "0 1")
-
-  } else {
-   col <- Reorder(res = all_results, mod_det = model_det)
-  }
+   col <- Reorder(res = all_res, mod_det = model_det)
 
 
 col_labs <- gsub("\\N", "", col)
@@ -111,7 +101,7 @@ if (model_det$endo_species == 1) {
       plot.title = element_text(
         color = "Black",
         size = 12,
-        face = "bold" ,
+        face = "bold",
       ),
       plot.margin = margin(0.7, 0.7, 0.7, 0.7, "cm"),
       legend.position = legend_pos,
