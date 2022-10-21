@@ -190,7 +190,7 @@ if(D > 0){
     if (any(cor_param_method == "ld")){
       corT <- cor_param_method[grep("^[^ld]", cor_param_method)]
       eq_param_cor <-eq_av_prop |> dplyr::group_by(parameter, infection_status) |> dplyr::summarise(cor = cor(value, proportion, method = corT))
-      eq_ld <- data.frame("ld" = NA, "Dprime" = NA, "r2" = NA, "phi_coef" = NA)
+      eq_ld <- data.frame("D" = NA, "D'" = NA, "r2" = NA, "phi_coef" = NA)
       cols <- c(colnames(parameters))
       eq_p <-data.frame(matrix(ncol = length(parameters)))
       colnames(eq_p) <- cols
@@ -218,7 +218,7 @@ if(D > 0){
           "Results" = to_test,
           "Proportion" = eq_dat,
           "correlations" = eq_param_cor,
-          "ld" = eq_ld
+          "ld_stats" = eq_ld
         )
       ))
     } else{
@@ -233,4 +233,3 @@ if(D > 0){
     }
   }
 }
-

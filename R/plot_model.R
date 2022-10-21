@@ -57,7 +57,7 @@ plot_model<- function(data = NULL ,
 
   defaults <- dplyr::enquo(defaults)
 
-  all_res <-  all_results %>% dplyr::filter(!!defaults)
+  all_res <-  all_results |> dplyr::filter(!!defaults)
 
    col <- Reorder(res = all_res, mod_det = model_det)
 
@@ -67,19 +67,19 @@ if (model_det$endo_species == 1) {
   col_labs <- gsub('.{1}$', '', col_labs)
 }
   datasum <-
-    all_res %>% tidyr::pivot_longer(all_of(col)) %>% group_by(.data[[ind_var]]) %>% summarise(sum = sum(value))
+    all_res |> tidyr::pivot_longer(all_of(col)) |> group_by(.data[[ind_var]]) |> summarise(sum = sum(value))
 
 
   data2 <- cbind(all_res, sum = datasum$sum)
 
-  data2 %>% tidyr::pivot_longer(all_of(col)) %>% mutate(name = forcats::fct_relevel(name, all_of(col))) %>% ggplot(aes(x = .data[[ind_var]], y = value /
+  data2 |> tidyr::pivot_longer(all_of(col)) |> mutate(name = forcats::fct_relevel(name, all_of(col))) |> ggplot(aes(x = .data[[ind_var]], y = value /
                                                                                                                   sum, fill = name))+
 
     geom_area(size = 0.5, colour = "black", alpha = alpha)+
     scale_fill_manual(values = colours, labels = col_labs)+
-    scale_y_continuous(expand = c(0, 0), breaks = ybreaks) +
-    scale_x_continuous(expand = c(0, 0),
-                       breaks = xbreaks) +
+    scale_y_continuous(expand = c(0, 0),
+                       breaks = ybreaks) +
+    scale_x_continuous(expand = c(0, 0)) +
     geom_vline(
       xintercept = def_param_plot,
       linetype = line_type,
@@ -112,8 +112,8 @@ if (model_det$endo_species == 1) {
       legend.text = element_text(size = 15),
       panel.grid = element_blank()
     ) +
-    ylab(label = y_labs) +
-    xlab(label = x_labs) +
+    xlab(x_labs)+
+    ylab(y_labs)+
     labs(fill = legend_labs, tag = tags) +
     ggtitle(titles)
 }
