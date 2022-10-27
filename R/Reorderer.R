@@ -1,5 +1,6 @@
 #reorder
-Reorder <- function(res = all_results, mod_det = model_det){
+Reorder <- function(res = all_results,
+                    mod_det = model_det){
   #split vectors for reordering
   #host states
   h_states <-colnames(res[, grep("^[^slnbtKm]*$", colnames(res))])

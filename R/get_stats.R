@@ -71,7 +71,7 @@ get_stats <- function(results_file = ODE_eq,
 
   # proportion A
   A <- fin_data[,"N10"]
-  #print(A)
+
 
   # proportion B
   B <- fin_data[,"N01"]
@@ -105,9 +105,7 @@ get_stats <- function(results_file = ODE_eq,
   patA <- na.omit(patA)
   dubA <- fin_data |> dplyr::select(patA)
   A_plus <-  data.frame(A_plus = rowSums(dubA))
-  print(class(A_plus))
-  # print(A_plus)
-  # dubAparam <- cbind(parameters, dubA)
+
 
 
   #proportions+parameters
@@ -123,7 +121,7 @@ get_stats <- function(results_file = ODE_eq,
     B_plus,
     coinf
   )
-  print(eq_dat)
+
 
   par <- colnames(parameters)
   eq_met <-tidyr::pivot_longer(eq_dat, all_of(par), names_to = "parameter")
@@ -190,7 +188,7 @@ if(D > 0){
     if (any(cor_param_method == "ld")){
       corT <- cor_param_method[grep("^[^ld]", cor_param_method)]
       eq_param_cor <-eq_av_prop |> dplyr::group_by(parameter, infection_status) |> dplyr::summarise(cor = cor(value, proportion, method = corT))
-      eq_ld <- data.frame("D" = NA, "D'" = NA, "r2" = NA, "phi_coef" = NA)
+      eq_ld <- data.frame("D" = NA, "Dprime" = NA, "r2" = NA, "phi_coef" = NA)
       cols <- c(colnames(parameters))
       eq_p <-data.frame(matrix(ncol = length(parameters)))
       colnames(eq_p) <- cols
@@ -214,7 +212,7 @@ if(D > 0){
     if (any(cor_param_method == "ld")){
       return(list(
         model_det = model_det,
-        "equilibrum_stats" = list(
+        "equilibrium_stats" = list(
           "Results" = to_test,
           "Proportion" = eq_dat,
           "correlations" = eq_param_cor,
