@@ -56,6 +56,8 @@ plot_model(
 
 \item{second_line_colour}{colour for this second default parameter line}
 
+\item{tags}{tags for the plot}
+
 \item{Legend_labs}{Label for legend}
 }
 \value{

@@ -15,7 +15,7 @@
 #' @param titles title for the graph
 #' @param second_def_line to add another line displaying a second default parameter to the plot
 #' @param second_line_colour colour for this second default parameter line
-#' @param tags
+#' @param tags tags for the plot
 #' @return a 100% stacked area plot of results
 #' @import ggplot2
 #' @import tidyr
@@ -55,11 +55,14 @@ plot_model<- function(data = NULL ,
 
   xbreaks <- dplyr::enquo(xbreaks)
 
-  defaults <- dplyr::enquo(defaults)
-
+  #defaults <- dplyr::enquo(defaults)
+if(is.na(defaults == TRUE)){
+  all_res <- all_results
+} else{
   all_res <-  all_results |> dplyr::filter(!!defaults)
-
-   col <- Reorder(res = all_res, mod_det = model_det)
+  #all_res <- subset(all_results, eval(parse(defaults))
+}
+  col <- Reorder(res = all_res, mod_det = model_det)
 
 
 col_labs <- gsub("\\N", "", col)

@@ -6,9 +6,8 @@
 \usage{
 get_stats(
   results_file = ODE_eq,
-  test_parameters = c("sigmaBA" == "sigmaAB", "nuA" == "nuB"),
-  set_baseline = c(K = 200, lambda = 1, mu = 0.5),
-  cor_param_method = c("ld", "pearson")
+  test_parameters = c("sigmaBA" == "sigmaAB"),
+  set_baseline = c(K = 200, lambda = 1, mu = 0.5)
 )
 }
 \arguments{
@@ -18,9 +17,6 @@ get_stats(
 additionally, parameters where values are to be matched during analysis can be specified with "etc == etc". parameters that are able to do defined in this way are: nu, sigma, and beta.}
 
 \item{set_baseline}{: vector of parameters to be kept at baseline, if NA, all parameters combinations will be considered.}
-
-\item{cor_param_method}{: methods of correlation calculations, options include ld + Dprime and r2, and or
-any method from the "cor" function in the stats package.if ld is selected Dprime and r2 will be automatically calculated.}
 
 \item{eq_threshold}{: the percent threshold for coefficient of variance to determine the point of stable equilibrium}
 }
@@ -32,5 +28,5 @@ simulation and parameter combinations, raw results at equilibrium, correlation t
 get_stats
 }
 \examples{
-get_stats(results_file = ODE_results,test_parameters = c("sigmaBA = sigmaAB"),set_baseline = c(K = 200, lambda = 1, mu = 0.5),cor_param_method = c("ld", "pearson"),core_spec = 2)
+get_stats(results_file = ODE_results,test_parameters = c("sigmaBA = sigmaAB"),set_baseline = c(K = 200, lambda = 1, mu = 0.5))
 }
