@@ -3,5 +3,10 @@
 .RData
 .Ruserdata
 *.rda
-R/get_stats_without_N00.R
-single_endo_scipen.svg
+.pdf
+.svg
+.png
+.xls
+.csv
+
+
