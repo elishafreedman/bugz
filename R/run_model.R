@@ -77,7 +77,7 @@ run_model <- function(endo_number = 2,
   print(paste("simulation start time", Sys.time()))
 
 
-
+#find where the system reaches equilbrium
   isEqui <- function(x, eq_t = eq_threshold) {
     x1 <- round(x[1], 2)
     x2 <- round(x[2], 2)
@@ -85,7 +85,7 @@ run_model <- function(endo_number = 2,
 
   }
 
-  eq_raw <- data.frame()
+ eq_raw <- data.frame()
   ode_calc <- function(x) {
     Res <- data.frame(deSolve::ode(ini_state, times, eqn, x))
     for (k in 1:(nrow(Res) - 1)) {
@@ -96,8 +96,9 @@ run_model <- function(endo_number = 2,
         break
       }
     }
-    return(eq_raw)
-  }
+      return("equil" = eq_raw)
+    }
+
 
 
   if (is.na(core_spec) == TRUE) {

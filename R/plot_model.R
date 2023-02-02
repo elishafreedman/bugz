@@ -25,7 +25,7 @@
 #' @export
 
 
-plot_model<- function(data = NULL ,
+plot_model <- function(data = NULL ,
                        x_labs = expression(paste(sigma[A])),
                        y_labs = "% infected",
                        legend_labs = "Infection\n status \n       AB",
@@ -42,9 +42,14 @@ plot_model<- function(data = NULL ,
                        ybreaks = NULL,
                        titles = NULL,
                        second_def_line = NULL,
-                       second_line_colour= NULL,
-                      tags  = NULL,
-                      tag_pos = NULL) {
+                       second_line_colour = NULL,
+                       tags  = NULL,
+                       tag_pos = NULL,
+                       ticks = NULL) {
+  #controlling which x axis ticks are labeled
+  # label_at <- function(n)
+  #   function(x) ifelse(x %% n == 0, x, "")
+
   model_det <- data[["simulation_details"]]
   all_results <- data[["simulations"]]
 
@@ -53,36 +58,42 @@ plot_model<- function(data = NULL ,
 
   colours <- c(uninfected_colour, colours)
 
-  xbreaks <- dplyr::enquo(xbreaks)
+  #xbreaks <- dplyr::enquo(xbreaks)
 
   #defaults <- dplyr::enquo(defaults)
-if(is.na(defaults == TRUE)){
-  all_res <- all_results
-} else{
-  all_res <-  all_results |> dplyr::filter(!!defaults)
-  #all_res <- subset(all_results, eval(parse(defaults))
-}
+  if (is.na(defaults == TRUE)) {
+    all_res <- all_results
+  } else{
+    #all_res <-  all_results |> dplyr::filter(!!defaults)
+    all_res <- subset(all_results, eval(parse(defaults)))
+  }
   col <- Reorder(res = all_res, mod_det = model_det)
 
 
-col_labs <- gsub("\\N", "", col)
-if (model_det$endo_species == 1) {
-  col_labs <- gsub('.{1}$', '', col_labs)
-}
+  col_labs <- gsub("\\N", "", col)
+  if (model_det$endo_species == 1) {
+    col_labs <- gsub('.{1}$', '', col_labs)
+  }
   datasum <-
-    all_res |> tidyr::pivot_longer(all_of(col)) |> group_by(.data[[ind_var]]) |> summarise(sum = sum(value))
+    all_res |> tidyr::pivot_longer(all_of(col)) |>
+    group_by(.data[[ind_var]]) |>
+    summarise(sum = sum(value))
 
 
   data2 <- cbind(all_res, sum = datasum$sum)
 
-  data2 |> tidyr::pivot_longer(all_of(col)) |> mutate(name = forcats::fct_relevel(name, all_of(col))) |> ggplot(aes(x = .data[[ind_var]], y = value /
-                                                                                                                  sum, fill = name))+
+  data2 |> tidyr::pivot_longer(all_of(col)) |>
+    mutate(name = forcats::fct_relevel(name, all_of(col))) |>
+    ggplot(aes(x = .data[[ind_var]], y = value / sum, fill = name)) +
 
-    geom_area(size = 0.5, colour = "black", alpha = alpha)+
-    scale_fill_manual(values = colours, labels = col_labs)+
+    geom_area(size = 0.5,
+              colour = "black",
+              alpha = alpha) +
+    scale_fill_manual(values = colours, labels = col_labs) +
     scale_y_continuous(expand = c(0, 0),
                        breaks = ybreaks) +
-    scale_x_continuous(expand = c(0, 0)) +
+    scale_x_continuous(expand = c(0, 0),
+                       breaks = xbreaks, labels = ticks) +
     geom_vline(
       xintercept = def_param_plot,
       linetype = line_type,
@@ -98,26 +109,25 @@ if (model_det$endo_species == 1) {
     theme_bw() +
     theme(
       axis.text = element_text(size = 15),
-      axis.title = element_text(size = 15),
-      axis.title.y = element_text(angle = 90, size = 15),
+      axis.title.y = element_text(angle = 90, size = 20),
       axis.title.x = element_text(size = 20),
       plot.title = element_text(
         color = "Black",
-        size = 12,
+        size = 20,
         face = "bold",
+        hjust = 0.5
       ),
       plot.margin = margin(0.7, 0.7, 0.7, 0.7, "cm"),
       legend.position = legend_pos,
-      legend.title = element_text(size = 15),
-      plot.tag = element_text(size = 12, face = "bold"),
+      legend.title = element_text(size = 20),
+      plot.tag = element_text(size = 20),
       plot.tag.position = tag_pos,
-      legend.key.size = unit(1, 'cm'),
-      legend.text = element_text(size = 15),
+      legend.key.size = unit(1, "cm"),
+      legend.text = element_text(size = 20),
       panel.grid = element_blank()
     ) +
-    xlab(x_labs)+
-    ylab(y_labs)+
+    xlab(x_labs) +
+    ylab(y_labs) +
     labs(fill = legend_labs, tag = tags) +
     ggtitle(titles)
 }
-

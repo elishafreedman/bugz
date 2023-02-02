@@ -11,7 +11,6 @@ Reorder <- function(res = all_results,
   for (i in 1:mod_det$endo_no_per_sp){
     A[i] <- h_states[grep(paste0(i, "0"), h_states)]
   }
-
   #double infected
   if(mod_det$endo_species==2){
   B <- rep(NA, mod_det$endo_no_per_sp)
@@ -23,8 +22,8 @@ Reorder <- function(res = all_results,
     h_states_coinf <- h_states[!h_states %in% to_remove]
     h_states_coinf1 <- h_states_coinf[1:length(h_states_coinf) / 2]
     h_states_coinf2 <- tail(h_states_coinf, length(h_states_coinf) / 2)
-    col <-c(zero_endo, A, h_states_coinf1, dubs, h_states_coinf2, B)
   }
+  col <-c(zero_endo, A, h_states_coinf1, dubs, h_states_coinf2, rev(B))
 }
 
   #concatenate vectors

@@ -131,11 +131,11 @@ shiny_endo_plot <- function(parameters = params,
       labs(colour = "infection status \n         A B") +
       scale_colour_manual(values = c("black", cols), labels = col_labs) +
       theme_classic() +
-      theme(axis.text = element_text(size = 20)) +
-      theme(axis.title = element_text(size = 20)) +
-      theme(legend.text = element_text(size = 20)) +
-      theme(legend.key.size = unit(3, "lines")) +
-      theme(legend.title = element_text(size = 20))
+      theme(axis.text = element_text(size = 20),
+            axis.title = element_text(size = 20),
+            legend.text = element_text(size = 20),
+            legend.key.size = unit(3, "lines"),
+            legend.title = element_text(size = 20))
   }
 
   if (endo_species >= 2) {

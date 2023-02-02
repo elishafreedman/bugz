@@ -24,7 +24,8 @@ plot_model(
   second_def_line = NULL,
   second_line_colour = NULL,
   tags = NULL,
-  tag_pos = NULL
+  tag_pos = NULL,
+  ticks = NULL
 )
 }
 \arguments{

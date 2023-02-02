@@ -48,14 +48,23 @@ get_stats <- function(results_file = ODE_eq,
   #total proportions
 
   test_sans_param <- to_test[, grep("^[^slnbtKm]*$", colnames(to_test))]
+  #print(test_sans_param)
 
   prop_data <- data.frame(rowSums(test_sans_param))
   for(i in 1:length(prop_data)){
     fin_data <- apply(test_sans_param, c(1,2), function(x) x/prop_data[i,])
   }
   fin_data <- as.data.frame(fin_data)
+  print(fin_data)
   # proportion of all coinfected
-  coinf <- c(rowSums(fin_data[, grep("^[^0slnbtKm]*$", colnames(fin_data))]))
+  co <- fin_data[, grep("^[^0]*$", colnames(fin_data))]
+  print(co)
+  if(model_det$endo_no_per_sp > 1){
+    coinf <- c(rowSums(co))
+  } else{
+    coinf <- co
+  }
+  print(coinf)
 
   #proportion uninfected
   N00 <- fin_data[,"N00"]
@@ -71,6 +80,7 @@ get_stats <- function(results_file = ODE_eq,
   # proportion double B
 
   #string pattern needed to recognise columns for species B co-infection
+  if(model_det$endo_no_per_sp > 1){
 
   patB <- rep(NA, model_det$endo_no_per_sp)
 
@@ -81,7 +91,7 @@ get_stats <- function(results_file = ODE_eq,
   patB <- na.omit(patB)
   dubB <- fin_data |> dplyr::select(patB)
   B_plus <- data.frame(B_plus = rowSums(dubB))
-  # dubBparam <- cbind(parameters, dubB)
+
 
 
   # proportion double A
@@ -96,7 +106,10 @@ get_stats <- function(results_file = ODE_eq,
   patA <- na.omit(patA)
   dubA <- fin_data |> dplyr::select(patA)
   A_plus <-  data.frame(A_plus = rowSums(dubA))
-
+} else {
+  A_plus <- rep(0, nrow(fin_data))
+  B_plus <- rep(0, nrow(fin_data))
+}
 
 
   #proportions+parameters
