@@ -24,7 +24,8 @@ plot_model(
   second_def_line = NULL,
   second_line_colour = NULL,
   tags = NULL,
-  tag_pos = NULL
+  tag_pos = NULL,
+  ticks = NULL
 )
 }
 \arguments{
@@ -55,6 +56,8 @@ plot_model(
 \item{second_def_line}{to add another line displaying a second default parameter to the plot}
 
 \item{second_line_colour}{colour for this second default parameter line}
+
+\item{tags}{tags for the plot}
 
 \item{Legend_labs}{Label for legend}
 }
